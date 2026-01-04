@@ -1,0 +1,207 @@
+.container {
+    max-width: 800px;
+}
+
+.header {
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.cardIcon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+}
+
+.cardTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.cardSubtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.cardBody {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.input,
+.select {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg-card, #0a0a0b);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--glass-border-hover);
+}
+
+.input::placeholder {
+    color: var(--text-subtle);
+}
+
+.select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 44px;
+    cursor: pointer;
+}
+
+.select option {
+    background: var(--bg-surface);
+    color: var(--text-main);
+}
+
+.helper {
+    font-size: 12px;
+    color: var(--text-subtle);
+}
+
+.toggleGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.toggleButton {
+    flex: 1;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggleButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.toggleButton.active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--glass-border-hover);
+    color: var(--text-main);
+}
+
+.infoCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.infoCard strong {
+    color: var(--text-main);
+}
+
+.infoCard svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--text-subtle);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.saveButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--text-main);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg-deep);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px var(--glow-white);
+}
+
+.saveButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 640px) {
+    .toggleGroup {
+        flex-direction: column;
+    }
+}

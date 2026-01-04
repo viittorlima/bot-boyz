@@ -1,0 +1,17 @@
+.container {
+    min-height: 100vh;
+    background: var(--bg-deep);
+}
+
+.main {
+    margin-left: 260px;
+    min-height: 100vh;
+    padding: 32px;
+}
+
+@media (max-width: 1024px) {
+    .main {
+        margin-left: 0;
+        padding: 80px 16px 24px;
+    }
+}

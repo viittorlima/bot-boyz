@@ -1,0 +1,114 @@
+.container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: rgba(15, 15, 17, 0.95);
+    border: 1px solid var(--glass-border-hover);
+    border-radius: 12px;
+    backdrop-filter: blur(12px);
+    animation: slideIn 0.3s ease;
+    pointer-events: auto;
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.toast.success {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.toast.error {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.toast.info {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.iconWrapper {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.success .iconWrapper {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.error .iconWrapper {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+.info .iconWrapper {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+.message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.closeButton {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .toast {
+        min-width: auto;
+        max-width: none;
+    }
+}

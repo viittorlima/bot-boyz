@@ -1,0 +1,190 @@
+.container {
+    min-height: 100vh;
+    background: var(--surface-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+}
+
+.loadingContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.errorContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.errorContainer h2 {
+    font-size: 24px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.errorContainer p {
+    color: var(--text-muted);
+}
+
+/* Profile Section */
+.profile {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.avatarWrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+.avatarWrapper::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(15px);
+}
+
+.avatarPlaceholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--surface-secondary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+}
+
+.name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.bio {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Bots Section */
+.botsSection {
+    width: 100%;
+    max-width: 400px;
+}
+
+.sectionTitle {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.botsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.botCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.botCard:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.botIcon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.botInfo {
+    flex: 1;
+}
+
+.botName {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.botMeta {
+    font-size: 12px;
+    color: var(--text-subtle);
+}
+
+.botArrow {
+    color: var(--text-subtle);
+}
+
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+}
+
+.emptyIcon {
+    color: var(--text-subtle);
+    margin-bottom: 16px;
+}
+
+.emptyState p {
+    font-size: 14px;
+    color: var(--text-muted);
+}
