@@ -5,8 +5,8 @@ import axios from 'axios';
  * Axios instance configured for BoyzClub API
  */
 
-// Hardcoded API URL
-const API_BASE_URL = 'http://localhost:4000/api';
+// Production API URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://geral-boyzclubapi.r954jc.easypanel.host/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
