@@ -11,13 +11,15 @@ import {
     X,
     LogOut,
     ChevronRight,
-    Shield
+    Shield,
+    CreditCard
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const adminMenuItems = [
     { href: '/admin', label: 'Visão Geral', icon: LayoutDashboard },
     { href: '/admin/creators', label: 'Criadores', icon: Users },
+    { href: '/admin/finance', label: 'Financeiro', icon: CreditCard },
     { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ];
 

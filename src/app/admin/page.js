@@ -1,27 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
     DollarSign, Users, Percent, TrendingUp, Wallet,
-    Plus, Settings, CreditCard, Loader2, Check, AlertCircle,
-    Ban, Eye, Search, RefreshCw
+    Loader2, RefreshCw, ArrowRight, CreditCard
 } from 'lucide-react';
-import api, { adminAPI } from '@/services/api';
+import api from '@/services/api';
 import styles from './page.module.css';
 
 export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
-    const [creators, setCreators] = useState([]);
-    const [settings, setSettings] = useState({
-        platformFee: 10,
-        gateway: 'asaas',
-        walletId: ''
-    });
-    const [saving, setSaving] = useState(false);
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [newCreator, setNewCreator] = useState({ name: '', email: '', password: '' });
-    const [searchTerm, setSearchTerm] = useState('');
+    const [recentTransactions, setRecentTransactions] = useState([]);
 
     useEffect(() => {
         loadData();
@@ -30,63 +21,15 @@ export default function AdminDashboardPage() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [statsRes, creatorsRes, settingsRes] = await Promise.all([
-                api.get('/admin/stats'),
-                api.get('/admin/creators'),
-                api.get('/admin/settings')
-            ]);
-            setStats(statsRes.data);
-            setCreators(creatorsRes.data.creators || []);
-            if (settingsRes.data) {
-                setSettings(prev => ({ ...prev, ...settingsRes.data }));
-            }
+            const response = await api.get('/admin/stats');
+            setStats(response.data);
+            setRecentTransactions(response.data.recentTransactions || []);
         } catch (error) {
             console.error('Error loading admin data:', error);
         } finally {
             setLoading(false);
         }
     };
-
-    const handleSaveSettings = async () => {
-        setSaving(true);
-        try {
-            await api.put('/admin/settings', settings);
-            alert('Configurações salvas com sucesso!');
-        } catch (error) {
-            console.error('Error saving settings:', error);
-            alert('Erro ao salvar configurações');
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleCreateCreator = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post('/admin/creators', newCreator);
-            setShowCreateModal(false);
-            setNewCreator({ name: '', email: '', password: '' });
-            loadData();
-        } catch (error) {
-            console.error('Error creating creator:', error);
-            alert(error.response?.data?.error || 'Erro ao criar criador');
-        }
-    };
-
-    const handleBanCreator = async (creatorId, currentStatus) => {
-        if (!confirm(`Deseja ${currentStatus === 'active' ? 'banir' : 'ativar'} este criador?`)) return;
-        try {
-            await api.post(`/admin/creators/${creatorId}/toggle-status`);
-            loadData();
-        } catch (error) {
-            console.error('Error toggling creator status:', error);
-        }
-    };
-
-    const filteredCreators = creators.filter(c =>
-        c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     if (loading) {
         return (
@@ -107,10 +50,11 @@ export default function AdminDashboardPage() {
             change: 'Toda a plataforma'
         },
         {
-            label: 'Comissões Recebidas',
+            label: 'Suas Comissões',
             value: `R$ ${(stats?.totalCommission || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
             icon: Percent,
-            change: `${settings.platformFee}% das vendas`
+            change: 'Split das vendas',
+            highlight: true
         },
         {
             label: 'Total de Criadores',
@@ -130,8 +74,8 @@ export default function AdminDashboardPage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Painel Administrativo</h1>
-                    <p className={styles.subtitle}>Gerencie a plataforma BoyzClub</p>
+                    <h1 className={styles.title}>Visão Geral</h1>
+                    <p className={styles.subtitle}>Métricas globais da plataforma BoyzClub</p>
                 </div>
                 <button className={styles.refreshButton} onClick={loadData}>
                     <RefreshCw size={18} />
@@ -142,7 +86,7 @@ export default function AdminDashboardPage() {
             {/* Stats Grid */}
             <div className={styles.statsGrid}>
                 {statsCards.map((stat, index) => (
-                    <div key={index} className={styles.statCard}>
+                    <div key={index} className={`${styles.statCard} ${stat.highlight ? styles.highlight : ''}`}>
                         <div className={styles.statHeader}>
                             <span className={styles.statLabel}>{stat.label}</span>
                             <div className={styles.statIcon}>
@@ -155,111 +99,30 @@ export default function AdminDashboardPage() {
                 ))}
             </div>
 
-            {/* Platform Settings */}
-            <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                    <h2 className={styles.sectionTitle}>
-                        <Settings size={20} />
-                        Configurações da Plataforma
-                    </h2>
-                </div>
-
-                <div className={styles.settingsGrid}>
-                    {/* Split Fee */}
-                    <div className={styles.settingCard}>
-                        <h3>Taxa da Plataforma (Split)</h3>
-                        <p>Porcentagem que a plataforma recebe de cada venda</p>
-                        <div className={styles.inputRow}>
-                            <input
-                                type="number"
-                                min="0"
-                                max="50"
-                                step="0.5"
-                                value={settings.platformFee}
-                                onChange={(e) => setSettings({ ...settings, platformFee: parseFloat(e.target.value) })}
-                                className={styles.input}
-                            />
-                            <span className={styles.inputSuffix}>%</span>
-                        </div>
+            {/* Quick Links */}
+            <div className={styles.quickLinks}>
+                <Link href="/admin/finance" className={styles.quickLink}>
+                    <CreditCard size={20} />
+                    <div>
+                        <span className={styles.quickLinkTitle}>Configurar Gateway</span>
+                        <span className={styles.quickLinkDesc}>Configure onde receber suas comissões</span>
                     </div>
-
-                    {/* Gateway Selection */}
-                    <div className={styles.settingCard}>
-                        <h3>Gateway de Recebimento</h3>
-                        <p>Onde a plataforma receberá as comissões</p>
-                        <div className={styles.gatewayOptions}>
-                            {['asaas', 'mercadopago', 'stripe'].map(gw => (
-                                <button
-                                    key={gw}
-                                    className={`${styles.gatewayOption} ${settings.gateway === gw ? styles.active : ''}`}
-                                    onClick={() => setSettings({ ...settings, gateway: gw })}
-                                >
-                                    {gw === 'asaas' && 'Asaas'}
-                                    {gw === 'mercadopago' && 'Mercado Pago'}
-                                    {gw === 'stripe' && 'Stripe'}
-                                </button>
-                            ))}
-                        </div>
+                    <ArrowRight size={18} />
+                </Link>
+                <Link href="/admin/creators" className={styles.quickLink}>
+                    <Users size={20} />
+                    <div>
+                        <span className={styles.quickLinkTitle}>Gerenciar Criadores</span>
+                        <span className={styles.quickLinkDesc}>Ver receitas, banir ou criar criadores</span>
                     </div>
-
-                    {/* Wallet ID */}
-                    <div className={styles.settingCard}>
-                        <h3>Wallet ID da Plataforma</h3>
-                        <p>ID da carteira para receber o split das vendas</p>
-                        <input
-                            type="text"
-                            placeholder="wal_xxxxxxxx"
-                            value={settings.walletId}
-                            onChange={(e) => setSettings({ ...settings, walletId: e.target.value })}
-                            className={styles.input}
-                        />
-                    </div>
-                </div>
-
-                <button
-                    className={styles.saveButton}
-                    onClick={handleSaveSettings}
-                    disabled={saving}
-                >
-                    {saving ? (
-                        <>
-                            <Loader2 size={18} className={styles.spinner} />
-                            Salvando...
-                        </>
-                    ) : (
-                        <>
-                            <Check size={18} />
-                            Salvar Configurações
-                        </>
-                    )}
-                </button>
+                    <ArrowRight size={18} />
+                </Link>
             </div>
 
-            {/* Creators Management */}
+            {/* Recent Transactions */}
             <div className={styles.section}>
                 <div className={styles.sectionHeader}>
-                    <h2 className={styles.sectionTitle}>
-                        <Users size={20} />
-                        Criadores ({creators.length})
-                    </h2>
-                    <div className={styles.sectionActions}>
-                        <div className={styles.searchBox}>
-                            <Search size={16} />
-                            <input
-                                type="text"
-                                placeholder="Buscar criador..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <button
-                            className={styles.addButton}
-                            onClick={() => setShowCreateModal(true)}
-                        >
-                            <Plus size={18} />
-                            Criar Criador
-                        </button>
-                    </div>
+                    <h2 className={styles.sectionTitle}>Últimas Transações</h2>
                 </div>
 
                 <div className={styles.tableWrapper}>
@@ -267,48 +130,30 @@ export default function AdminDashboardPage() {
                         <thead>
                             <tr>
                                 <th>Criador</th>
-                                <th>Email</th>
-                                <th>Receita</th>
-                                <th>Bots</th>
-                                <th>Status</th>
-                                <th>Ações</th>
+                                <th>Cliente</th>
+                                <th>Valor Total</th>
+                                <th>Sua Comissão</th>
+                                <th>Data</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredCreators.length === 0 ? (
+                            {recentTransactions.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className={styles.emptyRow}>
-                                        Nenhum criador encontrado
+                                    <td colSpan={5} className={styles.emptyRow}>
+                                        Nenhuma transação ainda
                                     </td>
                                 </tr>
                             ) : (
-                                filteredCreators.map(creator => (
-                                    <tr key={creator.id}>
-                                        <td className={styles.creatorName}>{creator.name}</td>
-                                        <td className={styles.email}>{creator.email}</td>
-                                        <td className={styles.revenue}>
-                                            R$ {(creator.totalRevenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                recentTransactions.map((tx, i) => (
+                                    <tr key={i}>
+                                        <td className={styles.creatorName}>{tx.creator}</td>
+                                        <td className={styles.customer}>{tx.customer}</td>
+                                        <td>R$ {tx.amount?.toFixed(2).replace('.', ',')}</td>
+                                        <td className={styles.commission}>
+                                            R$ {tx.commission?.toFixed(2).replace('.', ',')}
                                         </td>
-                                        <td>{creator.botsCount || 0}</td>
-                                        <td>
-                                            <span className={`${styles.status} ${styles[creator.status || 'active']}`}>
-                                                {creator.status === 'banned' ? 'Banido' : 'Ativo'}
-                                            </span>
-                                        </td>
-                                        <td className={styles.actions}>
-                                            <button
-                                                className={styles.actionBtn}
-                                                title="Ver detalhes"
-                                            >
-                                                <Eye size={16} />
-                                            </button>
-                                            <button
-                                                className={`${styles.actionBtn} ${styles.banBtn}`}
-                                                title={creator.status === 'banned' ? 'Ativar' : 'Banir'}
-                                                onClick={() => handleBanCreator(creator.id, creator.status)}
-                                            >
-                                                <Ban size={16} />
-                                            </button>
+                                        <td className={styles.date}>
+                                            {tx.paidAt ? new Date(tx.paidAt).toLocaleDateString('pt-BR') : '-'}
                                         </td>
                                     </tr>
                                 ))
@@ -317,53 +162,6 @@ export default function AdminDashboardPage() {
                     </table>
                 </div>
             </div>
-
-            {/* Create Creator Modal */}
-            {showCreateModal && (
-                <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
-                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                        <h2>Criar Novo Criador</h2>
-                        <form onSubmit={handleCreateCreator}>
-                            <div className={styles.formGroup}>
-                                <label>Nome</label>
-                                <input
-                                    type="text"
-                                    value={newCreator.name}
-                                    onChange={e => setNewCreator({ ...newCreator, name: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label>Email</label>
-                                <input
-                                    type="email"
-                                    value={newCreator.email}
-                                    onChange={e => setNewCreator({ ...newCreator, email: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label>Senha</label>
-                                <input
-                                    type="password"
-                                    value={newCreator.password}
-                                    onChange={e => setNewCreator({ ...newCreator, password: e.target.value })}
-                                    required
-                                    minLength={6}
-                                />
-                            </div>
-                            <div className={styles.modalActions}>
-                                <button type="button" onClick={() => setShowCreateModal(false)}>
-                                    Cancelar
-                                </button>
-                                <button type="submit" className={styles.primaryBtn}>
-                                    Criar Criador
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
