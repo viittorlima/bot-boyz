@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, Loader2, AlertCircle, Shield, Zap, DollarSign } from 'lucide-react';
+import { Mail, Lock, Loader2, AlertCircle, Shield, Zap, DollarSign, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
@@ -12,6 +12,7 @@ function LoginContent() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     const { login, isAuthenticated, user } = useAuth();
     const router = useRouter();
@@ -19,10 +20,21 @@ function LoginContent() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            if (user.role === 'admin') {
-                router.push('/admin');
+            setIsRedirecting(true);
+
+            // Check if needs onboarding (creators only)
+            if (user.role === 'creator' && !user.onboarding_completed) {
+                setTimeout(() => {
+                    router.push('/onboarding');
+                }, 1500);
+            } else if (user.role === 'admin') {
+                setTimeout(() => {
+                    router.push('/admin');
+                }, 1500);
             } else {
-                router.push('/dashboard');
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 1500);
             }
         }
     }, [isAuthenticated, user, router]);
@@ -42,7 +54,6 @@ function LoginContent() {
             await login(email, password);
         } catch (err) {
             setError(err.response?.data?.error || 'Erro ao fazer login. Verifique suas credenciais.');
-        } finally {
             setIsLoading(false);
         }
     };
@@ -52,6 +63,32 @@ function LoginContent() {
         { icon: DollarSign, title: 'Split Automático', desc: 'Receba instantaneamente' },
         { icon: Zap, title: 'Telegram Integrado', desc: 'Bots automatizados' }
     ];
+
+    // Redirect Animation
+    if (isRedirecting) {
+        return (
+            <div className={styles.redirectContainer}>
+                <div className={styles.redirectContent}>
+                    <div className={styles.redirectLogo}>
+                        <div className={styles.logoIcon}>B</div>
+                        <span>Boyz Vip</span>
+                    </div>
+                    <div className={styles.redirectSpinner}>
+                        <Sparkles size={32} className={styles.sparkle} />
+                    </div>
+                    <h2 className={styles.redirectTitle}>
+                        {user?.role === 'admin' ? 'Acessando Painel Admin...' :
+                            !user?.onboarding_completed ? 'Preparando seu cadastro...' :
+                                'Entrando...'}
+                    </h2>
+                    <p className={styles.redirectSubtitle}>Aguarde um momento</p>
+                    <div className={styles.progressBar}>
+                        <div className={styles.progressFill}></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { User, Mail, Lock, AtSign, Loader2, AlertCircle, Check, Shield, Zap, DollarSign } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { User, Mail, Lock, AtSign, Loader2, AlertCircle, Check, Shield, Zap, DollarSign, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
 export default function JoinPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -14,7 +16,7 @@ export default function JoinPage() {
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     const { register } = useAuth();
 
@@ -29,46 +31,43 @@ export default function JoinPage() {
 
         try {
             await register(formData);
-            setSuccess(true);
+            setIsRedirecting(true);
+            // Redirect to onboarding after animation
+            setTimeout(() => {
+                router.push('/onboarding');
+            }, 2000);
         } catch (err) {
             console.error('Register error:', err);
             setError(
                 err.response?.data?.error ||
                 'Erro ao criar conta. Tente novamente.'
             );
-        } finally {
             setIsLoading(false);
         }
     };
 
     const features = [
         { icon: Shield, title: 'Sem Mensalidade', desc: 'Pague apenas por venda' },
-        { icon: DollarSign, title: 'Taxa de R$ 0,75', desc: 'A menor do mercado' },
+        { icon: DollarSign, title: 'Taxa a partir de 5%', desc: 'A menor do mercado' },
         { icon: Zap, title: '100% Automático', desc: 'Sem trabalho manual' }
     ];
 
-    if (success) {
+    // Redirect Animation
+    if (isRedirecting) {
         return (
-            <div className={styles.container}>
-                <div className={styles.leftSide}>
-                    <div className={styles.brandContent}>
-                        <Link href="/" className={styles.logo}>
-                            <div className={styles.logoIcon}>B</div>
-                            <span>Boyz Vip</span>
-                        </Link>
-                        <h1 className={styles.headline}>
-                            Conta criada <br />
-                            <span className={styles.highlight}>com sucesso!</span>
-                        </h1>
+            <div className={styles.redirectContainer}>
+                <div className={styles.redirectContent}>
+                    <div className={styles.redirectLogo}>
+                        <div className={styles.logoIcon}>B</div>
+                        <span>Boyz Vip</span>
                     </div>
-                </div>
-                <div className={styles.rightSide}>
-                    <div className={styles.formWrapper}>
-                        <div className={styles.successIcon}>
-                            <Check size={32} />
-                        </div>
-                        <h2 className={styles.formTitle}>Bem-vindo!</h2>
-                        <p className={styles.formSubtitle}>Redirecionando para o dashboard...</p>
+                    <div className={styles.successCheck}>
+                        <Check size={32} />
+                    </div>
+                    <h2 className={styles.redirectTitle}>Conta criada com sucesso!</h2>
+                    <p className={styles.redirectSubtitle}>Vamos escolher seu plano...</p>
+                    <div className={styles.progressBar}>
+                        <div className={styles.progressFill}></div>
                     </div>
                 </div>
             </div>
