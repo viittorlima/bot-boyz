@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Globe, Bell, Shield, Loader2, Check, Save } from 'lucide-react';
+import { Settings, Globe, Bell, Shield, Loader2, Check, Save, MessageCircle, Megaphone } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
 
@@ -12,6 +12,9 @@ export default function AdminSettingsPage() {
         siteName: 'Boyz Vip',
         siteUrl: 'https://boyzclub.com',
         supportEmail: 'suporte@boyzclub.com',
+        platformChannelUsername: '@BoyzVip',
+        promotionContactLink: 'https://t.me/suporte',
+        supportTelegramLink: 'https://t.me/suporte',
         enableRegistration: true,
         requireEmailVerification: false,
         maintenanceMode: false
@@ -98,6 +101,49 @@ export default function AdminSettingsPage() {
                             value={settings.supportEmail}
                             onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
                         />
+                    </div>
+                </div>
+            </div>
+
+            {/* Telegram & Promotion Links */}
+            <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>
+                    <MessageCircle size={20} />
+                    Links de Telegram
+                </h2>
+
+                <div className={styles.fieldsGrid}>
+                    <div className={styles.field}>
+                        <label>@ do Canal de Prévias (rodapé do bot)</label>
+                        <input
+                            type="text"
+                            placeholder="@BoyzVip"
+                            value={settings.platformChannelUsername}
+                            onChange={(e) => setSettings({ ...settings, platformChannelUsername: e.target.value })}
+                        />
+                        <span className={styles.fieldHint}>Aparece no rodapé das mensagens do bot: "Este bot foi criado por @..."</span>
+                    </div>
+
+                    <div className={styles.field}>
+                        <label>Link de Suporte Telegram</label>
+                        <input
+                            type="url"
+                            placeholder="https://t.me/suporte"
+                            value={settings.supportTelegramLink}
+                            onChange={(e) => setSettings({ ...settings, supportTelegramLink: e.target.value })}
+                        />
+                        <span className={styles.fieldHint}>Link para contato via Telegram</span>
+                    </div>
+
+                    <div className={styles.field}>
+                        <label>Link para Envio de Divulgação</label>
+                        <input
+                            type="url"
+                            placeholder="https://t.me/suporte ou WhatsApp"
+                            value={settings.promotionContactLink}
+                            onChange={(e) => setSettings({ ...settings, promotionContactLink: e.target.value })}
+                        />
+                        <span className={styles.fieldHint}>Criadores usam esse link para enviar conteúdo de divulgação</span>
                     </div>
                 </div>
             </div>
