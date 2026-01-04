@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
     CreditCard, Wallet, Key, Check, Loader2, AlertCircle,
-    ExternalLink, Copy, Building, Percent, DollarSign, Info, Shield, Star
+    ExternalLink, Copy, Building, Percent, DollarSign, Info, Shield, Star, Megaphone
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -102,26 +102,34 @@ export default function AdminFinancePage() {
                     <Percent size={20} />
                     Taxa da Plataforma (Split)
                 </h2>
-                <p className={styles.sectionDesc}>
-                    Porcentagem que você recebe de cada venda. Este valor é descontado automaticamente do pagamento do criador.
-                </p>
 
-                <div className={styles.feeRow}>
-                    <div className={styles.feeInput}>
-                        <input
-                            type="number"
-                            min="0"
-                            max="50"
-                            step="0.5"
-                            value={settings.platformFee}
-                            onChange={(e) => setSettings({ ...settings, platformFee: parseFloat(e.target.value) })}
-                        />
-                        <span>%</span>
+                <div className={styles.feeCards}>
+                    <div className={styles.feeCard}>
+                        <div className={styles.feeCardIcon}>
+                            <Shield size={24} />
+                        </div>
+                        <div className={styles.feeCardContent}>
+                            <h4>Plano Padrão</h4>
+                            <div className={styles.feeValue}>5%</div>
+                            <p>Taxa fixa para criadores no plano padrão</p>
+                        </div>
                     </div>
-                    <div className={styles.feeExample}>
-                        <DollarSign size={16} />
-                        <span>Exemplo: Em uma venda de R$ 100, você recebe R$ {settings.platformFee?.toFixed(2)}</span>
+
+                    <div className={`${styles.feeCard} ${styles.promo}`}>
+                        <div className={styles.feeCardIcon}>
+                            <Megaphone size={24} />
+                        </div>
+                        <div className={styles.feeCardContent}>
+                            <h4>Plano Divulgação</h4>
+                            <div className={styles.feeValue}>10%</div>
+                            <p>Criadores que optam pela divulgação nos canais</p>
+                        </div>
                     </div>
+                </div>
+
+                <div className={styles.feeNote}>
+                    <Info size={16} />
+                    <span>A taxa é definida <strong>por criador</strong> no momento do cadastro ou na página de Divulgações. Você recebe automaticamente a comissão via split de pagamento.</span>
                 </div>
             </div>
 

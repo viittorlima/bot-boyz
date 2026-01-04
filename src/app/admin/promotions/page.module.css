@@ -331,6 +331,191 @@
     border-color: var(--text-main);
 }
 
+/* Edit Button */
+.editButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    color: #3b82f6;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editButton:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal {
+    background: var(--surface-primary);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.modalHeader h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.modalHeader button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.modalHeader button:hover {
+    color: var(--text-main);
+}
+
+.modalName {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 12px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 14px;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--text-main);
+}
+
+.hint {
+    display: block;
+    font-size: 12px;
+    color: var(--text-subtle);
+    margin-top: 6px;
+}
+
+.planToggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.planToggle button {
+    padding: 12px;
+    background: var(--surface-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.planToggle button:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.planToggle button.active {
+    background: var(--text-main);
+    color: var(--btn-text);
+    border-color: var(--text-main);
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modalActions button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalActions button:first-child {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+}
+
+.modalActions button:first-child:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.modalActions button:last-child {
+    background: var(--text-main);
+    border: none;
+    color: var(--btn-text);
+}
+
+.modalActions button:last-child:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.modalActions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .statsGrid {

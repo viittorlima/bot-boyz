@@ -9,9 +9,11 @@ import {
     Search,
     Check,
     Clock,
-    AlertCircle,
     Percent,
-    DollarSign
+    DollarSign,
+    Edit3,
+    X,
+    Save
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -21,6 +23,8 @@ export default function AdminPromotionsPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState('all'); // all, promotion, standard
+    const [editModal, setEditModal] = useState(null);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         loadCreators();
@@ -38,13 +42,32 @@ export default function AdminPromotionsPage() {
         }
     };
 
-    const handleUpdateFee = async (creatorId, feeRate, feeType) => {
+    const handleOpenEdit = (creator) => {
+        setEditModal({
+            id: creator.id,
+            name: creator.name,
+            fee_rate: creator.fee_rate || 5,
+            promotion_active: creator.promotion_active || false,
+            promotions_used_this_month: creator.promotions_used_this_month || 0
+        });
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editModal) return;
+        setSaving(true);
         try {
-            await api.put(`/admin/creators/${creatorId}/fee`, { feeRate, feeType });
+            await api.put(`/admin/creators/${editModal.id}/fee`, {
+                feeRate: editModal.fee_rate,
+                feeType: editModal.promotion_active ? 'promotion' : 'standard',
+                promotionsUsed: editModal.promotions_used_this_month
+            });
+            setEditModal(null);
             loadCreators();
         } catch (error) {
-            console.error('Error updating fee:', error);
-            alert('Erro ao atualizar taxa');
+            console.error('Error updating creator:', error);
+            alert('Erro ao atualizar criador');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -226,22 +249,14 @@ export default function AdminPromotionsPage() {
                                         )}
                                     </td>
                                     <td>
-                                        <div className={styles.actions}>
-                                            <select
-                                                value={creator.fee_rate || 5}
-                                                onChange={(e) => handleUpdateFee(
-                                                    creator.id,
-                                                    e.target.value,
-                                                    e.target.value >= 10 ? 'promotion' : 'standard'
-                                                )}
-                                                className={styles.feeSelect}
-                                            >
-                                                <option value="5">5%</option>
-                                                <option value="10">10%</option>
-                                                <option value="15">15%</option>
-                                                <option value="20">20%</option>
-                                            </select>
-                                        </div>
+                                        <button
+                                            className={styles.editButton}
+                                            onClick={() => handleOpenEdit(creator)}
+                                            title="Editar taxa e divulgações"
+                                        >
+                                            <Edit3 size={16} />
+                                            Editar
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -249,6 +264,89 @@ export default function AdminPromotionsPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Edit Modal */}
+            {editModal && (
+                <div className={styles.modalOverlay} onClick={() => setEditModal(null)}>
+                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Editar Criador</h2>
+                            <button onClick={() => setEditModal(null)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <p className={styles.modalName}>{editModal.name}</p>
+
+                        <div className={styles.formGroup}>
+                            <label>Taxa (%)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="50"
+                                value={editModal.fee_rate}
+                                onChange={(e) => setEditModal({
+                                    ...editModal,
+                                    fee_rate: parseInt(e.target.value) || 0
+                                })}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Plano</label>
+                            <div className={styles.planToggle}>
+                                <button
+                                    className={!editModal.promotion_active ? styles.active : ''}
+                                    onClick={() => setEditModal({
+                                        ...editModal,
+                                        promotion_active: false,
+                                        fee_rate: 5
+                                    })}
+                                >
+                                    Padrão (5%)
+                                </button>
+                                <button
+                                    className={editModal.promotion_active ? styles.active : ''}
+                                    onClick={() => setEditModal({
+                                        ...editModal,
+                                        promotion_active: true,
+                                        fee_rate: 10
+                                    })}
+                                >
+                                    Divulgação (10%)
+                                </button>
+                            </div>
+                        </div>
+
+                        {editModal.promotion_active && (
+                            <div className={styles.formGroup}>
+                                <label>Divulgações Usadas Este Mês</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="10"
+                                    value={editModal.promotions_used_this_month}
+                                    onChange={(e) => setEditModal({
+                                        ...editModal,
+                                        promotions_used_this_month: parseInt(e.target.value) || 0
+                                    })}
+                                />
+                                <span className={styles.hint}>Máximo permitido: 3 por mês</span>
+                            </div>
+                        )}
+
+                        <div className={styles.modalActions}>
+                            <button onClick={() => setEditModal(null)}>
+                                Cancelar
+                            </button>
+                            <button onClick={handleSaveEdit} disabled={saving}>
+                                {saving ? <Loader2 size={16} className={styles.spinner} /> : <Save size={16} />}
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

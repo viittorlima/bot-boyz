@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, LogIn, Ban, Eye, Loader2, Plus, RefreshCw, Check } from 'lucide-react';
+import { Search, Ban, Eye, Loader2, Plus, RefreshCw, Check } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/Badge';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -35,18 +35,7 @@ export default function AdminCreatorsPage() {
         c.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleImpersonate = async (creator) => {
-        if (!confirm(`Logar como ${creator.name}?`)) return;
-        try {
-            const response = await api.post(`/admin/impersonate/${creator.id}`);
-            localStorage.setItem('boyzclub_token', response.data.token);
-            localStorage.setItem('boyzclub_user', JSON.stringify(response.data.user));
-            window.location.href = '/dashboard';
-        } catch (error) {
-            console.error('Error impersonating:', error);
-            alert('Erro ao impersonar usuário');
-        }
-    };
+
 
     const handleToggleStatus = async (creator) => {
         const action = creator.status === 'banned' ? 'ativar' : 'banir';
@@ -181,13 +170,6 @@ export default function AdminCreatorsPage() {
                                     </td>
                                     <td>
                                         <div className={styles.actions}>
-                                            <button
-                                                className={styles.actionButton}
-                                                onClick={() => handleImpersonate(creator)}
-                                                title="Logar como este usuário"
-                                            >
-                                                <LogIn size={16} />
-                                            </button>
                                             <button
                                                 className={styles.actionButton}
                                                 title="Ver detalhes"
