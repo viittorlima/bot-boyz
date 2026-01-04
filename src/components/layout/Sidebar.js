@@ -45,7 +45,7 @@ export default function Sidebar() {
             <div className={styles.mobileHeader}>
                 <div className={styles.logoMobile}>
                     <div className={styles.logoIcon}>B</div>
-                    <span>BoyzClub</span>
+                    <span>Boyz Vip</span>
                 </div>
                 <button className={styles.menuButton} onClick={toggleSidebar}>
                     {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -61,7 +61,7 @@ export default function Sidebar() {
             <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
                 <div className={styles.logo}>
                     <div className={styles.logoIcon}>B</div>
-                    <span>BoyzClub</span>
+                    <span>Boyz Vip</span>
                 </div>
 
                 <nav className={styles.nav}>

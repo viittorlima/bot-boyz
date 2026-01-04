@@ -2,7 +2,7 @@ import axios from 'axios';
 
 /**
  * API Service
- * Axios instance configured for BoyzClub API
+ * Axios instance configured for Boyz Vip API
  */
 
 // Production API URL

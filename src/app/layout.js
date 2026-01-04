@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "BoyzClub - Monetize seu VIP",
+  title: "Boyz Vip - Monetize seu VIP",
   description: "Plataforma para criadores monetizarem grupos VIP no Telegram",
 };
 

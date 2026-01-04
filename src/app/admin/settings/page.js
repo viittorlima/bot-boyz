@@ -9,7 +9,7 @@ export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
-        siteName: 'BoyzClub',
+        siteName: 'Boyz Vip',
         siteUrl: 'https://boyzclub.com',
         supportEmail: 'suporte@boyzclub.com',
         enableRegistration: true,

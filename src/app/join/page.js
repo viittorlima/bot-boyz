@@ -54,7 +54,7 @@ export default function JoinPage() {
                     <div className={styles.brandContent}>
                         <Link href="/" className={styles.logo}>
                             <div className={styles.logoIcon}>B</div>
-                            <span>BoyzClub</span>
+                            <span>Boyz Vip</span>
                         </Link>
                         <h1 className={styles.headline}>
                             Conta criada <br />
@@ -82,7 +82,7 @@ export default function JoinPage() {
                 <div className={styles.brandContent}>
                     <Link href="/" className={styles.logo}>
                         <div className={styles.logoIcon}>B</div>
-                        <span>BoyzClub</span>
+                        <span>Boyz Vip</span>
                     </Link>
 
                     <h1 className={styles.headline}>

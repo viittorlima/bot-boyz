@@ -55,7 +55,7 @@ export default function AdminSidebar() {
                     <div className={`${styles.logoIcon} ${styles.admin}`}>
                         <Shield size={18} />
                     </div>
-                    <span>BoyzClub Admin</span>
+                    <span>Boyz Vip Admin</span>
                 </div>
 
                 <nav className={styles.nav}>

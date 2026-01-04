@@ -1,4 +1,4 @@
-// Mock Data for BoyzClub SaaS Hub - Complete
+// Mock Data for Boyz Vip SaaS Hub - Complete
 
 // Current logged-in user (Creator)
 export const currentUser = {

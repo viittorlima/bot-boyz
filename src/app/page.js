@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -21,11 +21,28 @@ import {
   Play,
   Sparkles
 } from 'lucide-react';
+import api from '@/services/api';
 import styles from './page.module.css';
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState(null);
   const [activeTutorial, setActiveTutorial] = useState(null);
+  const [platformFee, setPlatformFee] = useState(10); // Default 10%
+
+  // Fetch platform fee from admin settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await api.get('/public/settings');
+        if (response.data?.platformFee) {
+          setPlatformFee(response.data.platformFee);
+        }
+      } catch (error) {
+        console.log('Using default platform fee');
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const tutorials = [
     {
@@ -34,7 +51,7 @@ export default function LandingPage() {
       subtitle: 'Aprenda a criar e conectar seu bot do Telegram',
       steps: [
         { title: 'Crie seu bot no BotFather', desc: 'Abra o Telegram, procure por @BotFather e envie /newbot. Siga as instruções para criar seu bot e anote o token gerado.' },
-        { title: 'Faça login na BoyzClub', desc: 'Acesse sua conta no painel e vá em "Meus Bots". Clique em "Conectar Novo Bot".' },
+        { title: 'Faça login na Boyz Vip', desc: 'Acesse sua conta no painel e vá em "Meus Bots". Clique em "Conectar Novo Bot".' },
         { title: 'Cole o token', desc: 'Cole o token que você recebeu do BotFather no campo indicado e dê um nome ao seu bot.' },
         { title: 'Configure o canal VIP', desc: 'Adicione o bot como administrador do seu canal/grupo VIP e copie o ID do canal para o painel.' },
         { title: 'Pronto!', desc: 'Seu bot está conectado e pronto para receber assinantes. Agora crie seus planos de assinatura!' }
@@ -48,7 +65,7 @@ export default function LandingPage() {
         { title: 'Crie sua conta na Asaas', desc: 'Acesse asaas.com.br e crie sua conta gratuita. Complete o cadastro com seus dados.' },
         { title: 'Verifique sua conta', desc: 'Envie os documentos solicitados para verificação. O processo leva de 1 a 3 dias úteis.' },
         { title: 'Gere sua API Key', desc: 'No painel Asaas, vá em "Minha Conta" > "API" e gere uma nova chave de integração.' },
-        { title: 'Configure na BoyzClub', desc: 'No painel BoyzClub, vá em "Financeiro" e cole sua API Key da Asaas.' },
+        { title: 'Configure na Boyz Vip', desc: 'No painel Boyz Vip, vá em "Financeiro" e cole sua API Key da Asaas.' },
         { title: 'Teste uma cobrança', desc: 'Faça uma compra teste para verificar se tudo está funcionando corretamente.' }
       ]
     },
@@ -88,10 +105,10 @@ export default function LandingPage() {
 
   const faqs = [
     { q: 'Quais formas de pagamento são aceitas?', a: 'Aceitamos PIX, cartão de crédito em até 12x e boleto bancário.' },
-    { q: 'Qual é a taxa da plataforma?', a: 'Cobramos apenas R$ 0,75 por venda confirmada. Sem mensalidade ou taxas escondidas.' },
+    { q: 'Qual é a taxa da plataforma?', a: `Cobramos apenas ${platformFee}% por venda confirmada. Sem mensalidade ou taxas escondidas.` },
     { q: 'Como funciona a automação?', a: 'Após o pagamento confirmado, nosso bot adiciona automaticamente o assinante ao seu grupo VIP.' },
     { q: 'Posso ter mais de um grupo VIP?', a: 'Sim! Você pode conectar quantos bots quiser e gerenciar múltiplos grupos.' },
-    { q: 'Como recebo os pagamentos?', a: 'Os pagamentos vão direto para sua conta via Asaas. Você pode sacar a qualquer momento.' },
+    { q: 'Como recebo os pagamentos?', a: 'Os pagamentos vão direto para sua conta via gateway configurado. Você pode sacar a qualquer momento.' },
   ];
 
   return (
@@ -100,7 +117,7 @@ export default function LandingPage() {
       <header className={styles.header}>
         <div className={styles.logo}>
           <div className={styles.logoIcon}>B</div>
-          <span>BoyzClub</span>
+          <span>Boyz Vip</span>
         </div>
 
         <nav className={styles.nav}>
@@ -133,7 +150,7 @@ export default function LandingPage() {
 
           <p className={styles.heroSubtitle}>
             Crie grupos VIP, gerencie assinaturas e receba pagamentos de forma 100% automática.
-            <span className={styles.heroHighlight}> Taxa fixa de apenas R$ 0,75.</span>
+            <span className={styles.heroHighlight}> Taxa de apenas {platformFee}% por venda.</span>
           </p>
 
           <div className={styles.ctaGroup}>
@@ -336,7 +353,7 @@ export default function LandingPage() {
       <footer className={styles.footer}>
         <div className={styles.footerLogo}>
           <div className={styles.logoIcon}>B</div>
-          <span>BoyzClub</span>
+          <span>Boyz Vip</span>
         </div>
 
         <div className={styles.footerLinks}>
@@ -345,7 +362,7 @@ export default function LandingPage() {
           <a href="#" className={styles.footerLink}>Suporte</a>
         </div>
 
-        <p className={styles.footerCopy}>© 2026 BoyzClub. Todos os direitos reservados.</p>
+        <p className={styles.footerCopy}>© 2026 Boyz Vip. Todos os direitos reservados.</p>
       </footer>
     </div>
   );

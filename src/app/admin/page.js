@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Visão Geral</h1>
-                    <p className={styles.subtitle}>Métricas globais da plataforma BoyzClub</p>
+                    <p className={styles.subtitle}>Métricas globais da plataforma Boyz Vip</p>
                 </div>
                 <button className={styles.refreshButton} onClick={loadData}>
                     <RefreshCw size={18} />
