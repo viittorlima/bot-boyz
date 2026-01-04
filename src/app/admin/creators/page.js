@@ -131,6 +131,7 @@ export default function AdminCreatorsPage() {
                         <tr>
                             <th>Criador</th>
                             <th>Email</th>
+                            <th>Taxa</th>
                             <th>Bots</th>
                             <th>Receita Total</th>
                             <th>Sua Comissão</th>
@@ -141,7 +142,7 @@ export default function AdminCreatorsPage() {
                     <tbody>
                         {filteredCreators.length === 0 ? (
                             <tr>
-                                <td colSpan={7} className={styles.emptyRow}>
+                                <td colSpan={8} className={styles.emptyRow}>
                                     Nenhum criador encontrado
                                 </td>
                             </tr>
@@ -160,6 +161,12 @@ export default function AdminCreatorsPage() {
                                         </div>
                                     </td>
                                     <td className={styles.email}>{creator.email}</td>
+                                    <td>
+                                        <span className={`${styles.feeBadge} ${creator.promotion_active ? styles.promo : ''}`}>
+                                            {creator.fee_rate || 5}%
+                                            {creator.promotion_active && ' 📢'}
+                                        </span>
+                                    </td>
                                     <td>{creator.botsCount || 0}</td>
                                     <td className={styles.revenue}>
                                         R$ {(creator.totalRevenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}

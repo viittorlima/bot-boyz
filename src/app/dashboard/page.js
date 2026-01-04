@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, Users, Clock, TrendingUp, Loader2 } from 'lucide-react';
+import { DollarSign, Users, Clock, TrendingUp, Loader2, Megaphone, Percent, Calendar } from 'lucide-react';
 import { statsAPI } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
+import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const { showToast } = useToast();
+    const { user } = useAuth();
 
     useEffect(() => {
         loadStats();
@@ -28,6 +30,7 @@ export default function DashboardPage() {
                 activeSubscribers: 0,
                 pendingSales: 0,
                 totalRevenue: 'R$ 0,00',
+                monthRevenue: 'R$ 0,00',
                 recentSales: []
             });
         } finally {
@@ -44,7 +47,16 @@ export default function DashboardPage() {
         );
     }
 
+    // Get current month name
+    const currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long' });
+
     const statCards = [
+        {
+            label: `Faturamento de ${currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)}`,
+            value: stats?.monthRevenue || 'R$ 0,00',
+            icon: Calendar,
+            highlight: true
+        },
         {
             label: 'Faturamento Hoje',
             value: stats?.todayRevenue || 'R$ 0,00',
@@ -56,14 +68,10 @@ export default function DashboardPage() {
             icon: Users
         },
         {
-            label: 'Vendas Pendentes',
-            value: stats?.pendingSales || 0,
-            icon: Clock
-        },
-        {
-            label: 'Total Geral',
-            value: stats?.totalRevenue || 'R$ 0,00',
-            icon: TrendingUp
+            label: 'Taxa Atual',
+            value: `${user?.fee_rate || 5}%`,
+            icon: Percent,
+            subtext: user?.promotion_active ? '📢 Plano Divulgação' : 'Plano Padrão'
         }
     ];
 
@@ -76,7 +84,7 @@ export default function DashboardPage() {
 
             <div className={styles.statsGrid}>
                 {statCards.map((stat, index) => (
-                    <div key={index} className={styles.statCard}>
+                    <div key={index} className={`${styles.statCard} ${stat.highlight ? styles.highlight : ''}`}>
                         <div className={styles.statHeader}>
                             <span className={styles.statLabel}>{stat.label}</span>
                             <div className={styles.statIcon}>
@@ -84,6 +92,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
                         <div className={styles.statValue}>{stat.value}</div>
+                        {stat.subtext && <div className={styles.statSubtext}>{stat.subtext}</div>}
                     </div>
                 ))}
             </div>

@@ -12,13 +12,15 @@ import {
     LogOut,
     ChevronRight,
     Shield,
-    CreditCard
+    CreditCard,
+    Megaphone
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const adminMenuItems = [
     { href: '/admin', label: 'Visão Geral', icon: LayoutDashboard },
     { href: '/admin/creators', label: 'Criadores', icon: Users },
+    { href: '/admin/promotions', label: 'Divulgações', icon: Megaphone },
     { href: '/admin/finance', label: 'Financeiro', icon: CreditCard },
     { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ];
