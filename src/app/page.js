@@ -105,8 +105,8 @@ export default function LandingPage() {
 
   const faqs = [
     { q: 'Quais formas de pagamento são aceitas?', a: 'Aceitamos PIX, cartão de crédito em até 12x e boleto bancário.' },
-    { q: 'Qual é a taxa da plataforma?', a: `Cobramos apenas ${platformFee}% por venda confirmada. Sem mensalidade ou taxas escondidas.` },
-    { q: 'Como funciona a automação?', a: 'Após o pagamento confirmado, nosso bot adiciona automaticamente o assinante ao seu grupo VIP.' },
+    { q: 'Qual é a taxa da plataforma?', a: 'Taxa base de 5%. Opcionalmente, você pode optar pelo plano de divulgação (10%) e ter seu conteúdo promovido nos canais oficiais com até 3 divulgações por mês.' },
+    { q: 'Como funciona a divulgação?', a: 'Ao optar pelo plano de 10%, você ganha direito a 3 divulgações mensais nos canais oficiais da plataforma. Mínimo de 30 dias ativo.' },
     { q: 'Posso ter mais de um grupo VIP?', a: 'Sim! Você pode conectar quantos bots quiser e gerenciar múltiplos grupos.' },
     { q: 'Como recebo os pagamentos?', a: 'Os pagamentos vão direto para sua conta via gateway configurado. Você pode sacar a qualquer momento.' },
   ];
@@ -150,7 +150,7 @@ export default function LandingPage() {
 
           <p className={styles.heroSubtitle}>
             Crie grupos VIP, gerencie assinaturas e receba pagamentos de forma 100% automática.
-            <span className={styles.heroHighlight}> Taxa de apenas {platformFee}% por venda.</span>
+            <span className={styles.heroHighlight}> Taxa a partir de 5%.</span>
           </p>
 
           <div className={styles.ctaGroup}>

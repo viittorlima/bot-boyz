@@ -14,7 +14,8 @@ import {
     LogOut,
     ChevronRight,
     ExternalLink,
-    Eye
+    Eye,
+    Megaphone
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.css';
@@ -24,6 +25,7 @@ const menuItems = [
     { href: '/dashboard/bots', label: 'Meus Bots', icon: Bot },
     { href: '/dashboard/sales', label: 'Vendas', icon: Receipt },
     { href: '/dashboard/finance', label: 'Financeiro', icon: CreditCard },
+    { href: '/dashboard/promotion', label: 'Divulgação', icon: Megaphone },
     { href: '/dashboard/profile', label: 'Minha Página', icon: Eye },
 ];
 
