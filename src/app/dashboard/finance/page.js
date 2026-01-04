@@ -128,7 +128,9 @@ export default function FinancePage() {
     const gatewayInfo = {
         pushinpay: {
             name: 'PushinPay',
-            description: 'PIX instantâneo. 100% sigiloso e privado. Sem burocracia.',
+            description: '100% sigiloso e privado. Sem burocracia. Ideal para conteúdo adulto.',
+            paymentMethods: ['PIX'],
+            badge: '🔒 Somente PIX',
             link: 'https://app.pushinpay.com.br/#/register',
             recommended: true,
             tutorial: [
@@ -141,7 +143,9 @@ export default function FinancePage() {
         },
         asaas: {
             name: 'Asaas',
-            description: 'Gateway brasileiro com PIX, boleto e cartão. Taxa a partir de 2,99%.',
+            description: 'Gateway brasileiro completo. Taxa a partir de 2,99%. Saque rápido.',
+            paymentMethods: ['PIX', 'Boleto', 'Cartão de Crédito'],
+            badge: '💳 PIX + Cartão + Boleto',
             link: 'https://www.asaas.com',
             tutorial: [
                 'Acesse app.asaas.com e faça login ou crie sua conta',
@@ -153,7 +157,9 @@ export default function FinancePage() {
         },
         mercadopago: {
             name: 'Mercado Pago',
-            description: 'Gateway do Mercado Livre. PIX instantâneo e cartão em até 18x.',
+            description: 'Gateway popular. PIX instantâneo e cartão em até 18x.',
+            paymentMethods: ['PIX', 'Cartão de Crédito', 'Cartão de Débito'],
+            badge: '💳 PIX + Cartão (18x)',
             link: 'https://www.mercadopago.com.br/developers',
             tutorial: [
                 'Acesse mercadopago.com.br/developers e faça login',
@@ -165,7 +171,9 @@ export default function FinancePage() {
         },
         stripe: {
             name: 'Stripe',
-            description: 'Gateway internacional. Aceita cartões internacionais e pagamentos recorrentes.',
+            description: 'Gateway internacional. Aceita cartões de todo o mundo.',
+            paymentMethods: ['Cartão Internacional', 'Apple Pay', 'Google Pay'],
+            badge: '🌎 Cartões Internacionais',
             link: 'https://dashboard.stripe.com',
             tutorial: [
                 'Acesse dashboard.stripe.com e faça login',
@@ -237,6 +245,7 @@ export default function FinancePage() {
                                 {info.recommended ? <Shield size={24} /> : <Building size={24} />}
                                 <span className={styles.gatewayName}>{info.name}</span>
                             </div>
+                            <div className={styles.paymentBadge}>{info.badge}</div>
                             <p className={styles.gatewayDesc}>{info.description}</p>
                             <a
                                 href={info.link}
