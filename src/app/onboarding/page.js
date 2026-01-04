@@ -11,7 +11,8 @@ import {
     ArrowRight,
     Sparkles,
     Clock,
-    MessageCircle
+    MessageCircle,
+    Loader2
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -20,7 +21,6 @@ export default function OnboardingPage() {
     const router = useRouter();
     const { user, refreshUser } = useAuth();
     const [selectedPlan, setSelectedPlan] = useState(null);
-    const [termsAccepted, setTermsAccepted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -67,24 +67,29 @@ export default function OnboardingPage() {
             setError('Selecione um plano para continuar');
             return;
         }
-        if (!termsAccepted) {
-            setError('Você precisa aceitar os termos para continuar');
-            return;
-        }
 
         setLoading(true);
         setError('');
 
         try {
-            await api.post('/auth/complete-onboarding', {
+            const response = await api.post('/auth/complete-onboarding', {
                 feeType: selectedPlan
             });
 
-            await refreshUser();
+            console.log('Onboarding response:', response.data);
+
+            // Refresh user data
+            try {
+                await refreshUser();
+            } catch (refreshErr) {
+                console.log('Refresh failed, continuing anyway');
+            }
+
+            // Redirect to dashboard
             router.push('/dashboard');
         } catch (err) {
+            console.error('Onboarding error:', err);
             setError(err.response?.data?.error || 'Erro ao completar cadastro');
-        } finally {
             setLoading(false);
         }
     };
@@ -165,22 +170,6 @@ export default function OnboardingPage() {
                     </div>
                 )}
 
-                {/* Terms */}
-                <div className={styles.terms}>
-                    <label className={styles.checkbox}>
-                        <input
-                            type="checkbox"
-                            checked={termsAccepted}
-                            onChange={(e) => setTermsAccepted(e.target.checked)}
-                        />
-                        <span className={styles.checkmark}></span>
-                        <span>
-                            Li e aceito os <a href="/termos" target="_blank">Termos de Uso</a> e a{' '}
-                            <a href="/privacidade" target="_blank">Política de Privacidade</a>
-                        </span>
-                    </label>
-                </div>
-
                 {/* Error */}
                 {error && (
                     <div className={styles.error}>
@@ -192,10 +181,13 @@ export default function OnboardingPage() {
                 <button
                     className={styles.submitButton}
                     onClick={handleComplete}
-                    disabled={loading || !selectedPlan || !termsAccepted}
+                    disabled={loading || !selectedPlan}
                 >
                     {loading ? (
-                        'Processando...'
+                        <>
+                            <Loader2 size={18} className={styles.spinner} />
+                            Processando...
+                        </>
                     ) : (
                         <>
                             Começar Agora
@@ -212,3 +204,4 @@ export default function OnboardingPage() {
         </div>
     );
 }
+
