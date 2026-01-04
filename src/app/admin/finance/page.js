@@ -53,7 +53,7 @@ export default function AdminFinancePage() {
         }
     };
 
-    const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://geral-boyzclubapi.r954jc.easypanel.host'}/api/webhooks`;
+    const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://boyzvip-api.90k5up.easypanel.host'}/api/webhooks`;
 
     const copyWebhook = (url) => {
         navigator.clipboard.writeText(url);

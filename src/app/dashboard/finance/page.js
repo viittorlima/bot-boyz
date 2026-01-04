@@ -178,7 +178,7 @@ export default function FinancePage() {
     };
 
     const webhookUrl = user?.webhook_url ||
-        `${process.env.NEXT_PUBLIC_API_URL || 'https://geral-boyzclubapi.r954jc.easypanel.host'}/api/webhooks/creator/${user?.id || 'xxx'}`;
+        `${process.env.NEXT_PUBLIC_API_URL || 'https://boyzvip-api.90k5up.easypanel.host'}/api/webhooks/creator/${user?.id || 'xxx'}`;
 
     return (
         <div className={styles.container}>
