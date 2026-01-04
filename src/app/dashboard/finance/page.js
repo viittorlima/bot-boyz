@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wallet, Copy, Check, Loader2, AlertCircle, ExternalLink, Key, CreditCard, Building } from 'lucide-react';
+import { Wallet, Copy, Check, Loader2, AlertCircle, ExternalLink, Key, CreditCard, Building, Shield, Star } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authAPI } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
@@ -18,6 +18,8 @@ export default function FinancePage() {
 
     // Gateway credentials
     const [credentials, setCredentials] = useState({
+        // PushinPay
+        pushinpay_api_token: '',
         // Asaas
         asaas_api_key: '',
         asaas_webhook_token: '',
@@ -32,7 +34,7 @@ export default function FinancePage() {
 
     useEffect(() => {
         if (user) {
-            setGateway(user.gateway_preference || 'asaas');
+            setGateway(user.gateway_preference || 'pushinpay');
         }
     }, [user]);
 
@@ -41,11 +43,19 @@ export default function FinancePage() {
     };
 
     const handleSave = async () => {
-        // Validate based on selected gateway
         let isValid = false;
         let gatewayCredentials = {};
 
-        if (gateway === 'asaas') {
+        if (gateway === 'pushinpay') {
+            if (!credentials.pushinpay_api_token) {
+                showToast('Informe o Token de API do PushinPay', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                api_token: credentials.pushinpay_api_token
+            };
+        } else if (gateway === 'asaas') {
             if (!credentials.asaas_api_key) {
                 showToast('Informe a Chave de API do Asaas', 'error');
                 return;
@@ -85,9 +95,10 @@ export default function FinancePage() {
             await authAPI.updateGateway(gateway, gatewayCredentials);
             updateUser({ gateway_preference: gateway });
             showToast('Gateway configurado com sucesso!', 'success');
-            // Clear credentials after save
             setCredentials({
+                pushinpay_api_token: '',
                 asaas_api_key: '',
+                asaas_webhook_token: '',
                 mp_access_token: '',
                 mp_public_key: '',
                 stripe_secret_key: '',
@@ -115,6 +126,19 @@ export default function FinancePage() {
     };
 
     const gatewayInfo = {
+        pushinpay: {
+            name: 'PushinPay',
+            description: 'PIX instantâneo. 100% sigiloso e privado. Sem burocracia.',
+            link: 'https://app.pushinpay.com.br/#/register',
+            recommended: true,
+            tutorial: [
+                'Cadastre-se em app.pushinpay.com.br',
+                'Faça login e acesse o Painel',
+                'Vá em Configurações → Gerar Token de API',
+                'Copie o token gerado e cole abaixo',
+                'Configure o Webhook URL nas configurações do PushinPay'
+            ]
+        },
         asaas: {
             name: 'Asaas',
             description: 'Gateway brasileiro com PIX, boleto e cartão. Taxa a partir de 2,99%.',
@@ -154,7 +178,7 @@ export default function FinancePage() {
     };
 
     const webhookUrl = user?.webhook_url ||
-        `${process.env.NEXT_PUBLIC_API_URL || 'https://api.boyzclub.com'}/api/webhooks/creator/${user?.id || 'xxx'}`;
+        `${process.env.NEXT_PUBLIC_API_URL || 'https://geral-boyzclubapi.r954jc.easypanel.host'}/api/webhooks/creator/${user?.id || 'xxx'}`;
 
     return (
         <div className={styles.container}>
@@ -200,11 +224,17 @@ export default function FinancePage() {
                     {Object.entries(gatewayInfo).map(([key, info]) => (
                         <button
                             key={key}
-                            className={`${styles.gatewayCard} ${gateway === key ? styles.active : ''}`}
+                            className={`${styles.gatewayCard} ${gateway === key ? styles.active : ''} ${info.recommended ? styles.recommended : ''}`}
                             onClick={() => setGateway(key)}
                         >
+                            {info.recommended && (
+                                <div className={styles.recommendedBadge}>
+                                    <Star size={10} />
+                                    Recomendado
+                                </div>
+                            )}
                             <div className={styles.gatewayHeader}>
-                                <Building size={24} />
+                                {info.recommended ? <Shield size={24} /> : <Building size={24} />}
                                 <span className={styles.gatewayName}>{info.name}</span>
                             </div>
                             <p className={styles.gatewayDesc}>{info.description}</p>
@@ -230,11 +260,49 @@ export default function FinancePage() {
                     Configurar {gatewayInfo[gateway]?.name}
                 </h2>
 
+                {/* PushinPay Security Highlight */}
+                {gateway === 'pushinpay' && (
+                    <div className={styles.securityHighlight}>
+                        <Shield size={20} />
+                        <div>
+                            <h3>Por que escolher PushinPay?</h3>
+                            <ul>
+                                <li><strong>100% Sigiloso</strong> - Não exige dados pessoais extensos</li>
+                                <li><strong>Privacidade Total</strong> - Transações discretas e seguras</li>
+                                <li><strong>Sem Burocracia</strong> - Cadastro rápido e simples</li>
+                                <li><strong>PIX Instantâneo</strong> - Receba em segundos na sua conta</li>
+                            </ul>
+                        </div>
+                    </div>
+                )}
+
                 <TutorialCard
                     title={`Como configurar ${gatewayInfo[gateway]?.name}`}
                     steps={gatewayInfo[gateway]?.tutorial || []}
                     defaultOpen={true}
                 />
+
+                {/* PushinPay Fields */}
+                {gateway === 'pushinpay' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
+                            <label>
+                                <Key size={16} />
+                                Token de API *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="seu_token_api_aqui"
+                                value={credentials.pushinpay_api_token}
+                                onChange={(e) => handleCredentialChange('pushinpay_api_token', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Painel → Configurações → Gerar Token de API
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Asaas Fields */}
                 {gateway === 'asaas' && (

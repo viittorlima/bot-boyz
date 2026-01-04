@@ -196,12 +196,13 @@
 /* Gateway Grid */
 .gatewayGrid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
 
 .gatewayCard {
+    position: relative;
     padding: 20px;
     background: transparent;
     border: 1px solid var(--glass-border);
@@ -219,6 +220,32 @@
 .gatewayCard.active {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gatewayCard.recommended {
+    border-color: rgba(34, 197, 94, 0.3);
+    background: rgba(34, 197, 94, 0.03);
+}
+
+.gatewayCard.recommended.active {
+    border-color: rgba(34, 197, 94, 0.5);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.recommendedBadge {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #22c55e;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000;
 }
 
 .gatewayHeader {
@@ -255,12 +282,62 @@
     color: var(--text-main);
 }
 
+/* Security Highlight */
+.securityHighlight {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(34, 197, 94, 0.05);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    border-radius: 14px;
+    margin-bottom: 20px;
+}
+
+.securityHighlight>svg {
+    flex-shrink: 0;
+    color: #22c55e;
+    margin-top: 2px;
+}
+
+.securityHighlight h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+.securityHighlight ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.securityHighlight li {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    padding-left: 16px;
+    position: relative;
+}
+
+.securityHighlight li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #22c55e;
+    font-weight: bold;
+}
+
 /* Fields Grid */
 .fieldsGrid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin: 20px 0;
+}
+
+.inputGroup.fullWidth {
+    grid-column: span 2;
 }
 
 .inputGroup label {
@@ -291,5 +368,13 @@
 @media (max-width: 768px) {
     .gatewayGrid {
         grid-template-columns: 1fr;
+    }
+
+    .fieldsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .inputGroup.fullWidth {
+        grid-column: span 1;
     }
 }

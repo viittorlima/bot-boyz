@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
     CreditCard, Wallet, Key, Check, Loader2, AlertCircle,
-    ExternalLink, Copy, Building, Percent, DollarSign, Info
+    ExternalLink, Copy, Building, Percent, DollarSign, Info, Shield, Star
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -14,7 +14,9 @@ export default function AdminFinancePage() {
     const [copied, setCopied] = useState(false);
     const [settings, setSettings] = useState({
         platformFee: 10,
-        gateway: 'mercadopago',
+        gateway: 'pushinpay',
+        // PushinPay
+        pushinpay_api_token: '',
         // Mercado Pago
         mp_access_token: '',
         mp_public_key: '',
@@ -134,6 +136,22 @@ export default function AdminFinancePage() {
                 </p>
 
                 <div className={styles.gatewayGrid}>
+                    {/* PushinPay - Recommended */}
+                    <button
+                        className={`${styles.gatewayCard} ${styles.recommended} ${settings.gateway === 'pushinpay' ? styles.active : ''}`}
+                        onClick={() => setSettings({ ...settings, gateway: 'pushinpay' })}
+                    >
+                        <div className={styles.recommendedBadge}>
+                            <Star size={12} />
+                            Recomendado
+                        </div>
+                        <div className={styles.gatewayHeader}>
+                            <Shield size={24} />
+                            <span>PushinPay</span>
+                        </div>
+                        <p>PIX instantâneo. <strong>Sigiloso e privado</strong>. Sem burocracia.</p>
+                    </button>
+
                     <button
                         className={`${styles.gatewayCard} ${settings.gateway === 'mercadopago' ? styles.active : ''}`}
                         onClick={() => setSettings({ ...settings, gateway: 'mercadopago' })}
@@ -157,6 +175,58 @@ export default function AdminFinancePage() {
                     </button>
                 </div>
             </div>
+
+            {/* PushinPay Config */}
+            {settings.gateway === 'pushinpay' && (
+                <div className={styles.section}>
+                    <div className={styles.securityHighlight}>
+                        <Shield size={20} />
+                        <div>
+                            <h3>Por que escolher PushinPay?</h3>
+                            <ul>
+                                <li><strong>100% Sigiloso</strong> - Não exige dados pessoais extensos</li>
+                                <li><strong>Privacidade Total</strong> - Transações discretas e seguras</li>
+                                <li><strong>Sem Burocracia</strong> - Cadastro rápido e simples</li>
+                                <li><strong>PIX Instantâneo</strong> - Receba em segundos na sua conta</li>
+                                <li><strong>Split Automático</strong> - Divisão automática de valores</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h2 className={styles.sectionTitle}>
+                        <Key size={20} />
+                        Credenciais PushinPay
+                    </h2>
+                    <p className={styles.sectionDesc}>
+                        Cadastre-se em <a href="https://app.pushinpay.com.br/#/register" target="_blank" rel="noopener noreferrer">app.pushinpay.com.br <ExternalLink size={12} /></a>
+                        → Acesse o painel → Gere seu Token de API
+                    </p>
+
+                    <div className={styles.fieldsGrid}>
+                        <div className={`${styles.field} ${styles.fullWidth}`}>
+                            <label>Token de API *</label>
+                            <input
+                                type="password"
+                                placeholder="seu_token_api_aqui"
+                                value={settings.pushinpay_api_token}
+                                onChange={(e) => setSettings({ ...settings, pushinpay_api_token: e.target.value })}
+                            />
+                            <span className={styles.hint}>Painel → Configurações → Gerar Token de API</span>
+                        </div>
+                    </div>
+
+                    <div className={styles.webhookSection}>
+                        <label>URL do Webhook (configure no PushinPay):</label>
+                        <div className={styles.webhookBox}>
+                            <input type="text" value={`${webhookUrl}/pushinpay`} readOnly />
+                            <button onClick={() => copyWebhook(`${webhookUrl}/pushinpay`)}>
+                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                            </button>
+                        </div>
+                        <span className={styles.hint}>Configurações → Webhook Customizado → Cole a URL acima</span>
+                    </div>
+                </div>
+            )}
 
             {/* Mercado Pago Config */}
             {settings.gateway === 'mercadopago' && (
