@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wallet, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
+import { Wallet, Copy, Check, Loader2, AlertCircle, ExternalLink, Key, CreditCard, Building } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authAPI } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
@@ -13,9 +13,22 @@ export default function FinancePage() {
     const { showToast } = useToast();
 
     const [gateway, setGateway] = useState('');
-    const [apiToken, setApiToken] = useState('');
     const [saving, setSaving] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    // Gateway credentials
+    const [credentials, setCredentials] = useState({
+        // Asaas
+        asaas_api_key: '',
+        asaas_webhook_token: '',
+        // Mercado Pago
+        mp_access_token: '',
+        mp_public_key: '',
+        // Stripe
+        stripe_secret_key: '',
+        stripe_publishable_key: '',
+        stripe_webhook_secret: ''
+    });
 
     useEffect(() => {
         if (user) {
@@ -23,18 +36,64 @@ export default function FinancePage() {
         }
     }, [user]);
 
+    const handleCredentialChange = (field, value) => {
+        setCredentials(prev => ({ ...prev, [field]: value }));
+    };
+
     const handleSave = async () => {
-        if (!apiToken.trim()) {
-            showToast('Informe o token da API', 'error');
-            return;
+        // Validate based on selected gateway
+        let isValid = false;
+        let gatewayCredentials = {};
+
+        if (gateway === 'asaas') {
+            if (!credentials.asaas_api_key) {
+                showToast('Informe a Chave de API do Asaas', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                api_key: credentials.asaas_api_key,
+                webhook_token: credentials.asaas_webhook_token
+            };
+        } else if (gateway === 'mercadopago') {
+            if (!credentials.mp_access_token || !credentials.mp_public_key) {
+                showToast('Preencha Access Token e Public Key', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                access_token: credentials.mp_access_token,
+                public_key: credentials.mp_public_key
+            };
+        } else if (gateway === 'stripe') {
+            if (!credentials.stripe_secret_key || !credentials.stripe_publishable_key) {
+                showToast('Preencha Secret Key e Publishable Key', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                secret_key: credentials.stripe_secret_key,
+                publishable_key: credentials.stripe_publishable_key,
+                webhook_secret: credentials.stripe_webhook_secret
+            };
         }
+
+        if (!isValid) return;
 
         setSaving(true);
         try {
-            await authAPI.updateGateway(gateway, apiToken);
+            await authAPI.updateGateway(gateway, gatewayCredentials);
             updateUser({ gateway_preference: gateway });
             showToast('Gateway configurado com sucesso!', 'success');
-            setApiToken('');
+            // Clear credentials after save
+            setCredentials({
+                asaas_api_key: '',
+                mp_access_token: '',
+                mp_public_key: '',
+                stripe_secret_key: '',
+                stripe_publishable_key: '',
+                stripe_webhook_secret: ''
+            });
         } catch (error) {
             console.error('Error saving gateway:', error);
             showToast(
@@ -55,28 +114,43 @@ export default function FinancePage() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const gatewayTutorials = {
-        asaas: [
-            'Acesse app.asaas.com e faça login',
-            'Vá em Configurações → Integrações',
-            'Clique em "Gerar Chave de API"',
-            'Copie a chave e cole aqui',
-            'Configure o Webhook URL no Asaas'
-        ],
-        mercadopago: [
-            'Acesse mercadopago.com.br/developers',
-            'Vá em "Suas Integrações" → "Criar aplicação"',
-            'Em Credenciais de produção, copie o Access Token',
-            'Cole o token aqui',
-            'Configure o Webhook URL nas configurações'
-        ],
-        stripe: [
-            'Acesse dashboard.stripe.com',
-            'Vá em Developers → API Keys',
-            'Copie a Secret Key (sk_live_...)',
-            'Cole aqui',
-            'Configure o Webhook em Developers → Webhooks'
-        ]
+    const gatewayInfo = {
+        asaas: {
+            name: 'Asaas',
+            description: 'Gateway brasileiro com PIX, boleto e cartão. Taxa a partir de 2,99%.',
+            link: 'https://www.asaas.com',
+            tutorial: [
+                'Acesse app.asaas.com e faça login ou crie sua conta',
+                'Vá em Configurações → Integrações',
+                'Clique em "Gerar Chave de API"',
+                'Copie a chave que começa com $aact_',
+                'Cole a chave abaixo e configure o Webhook URL no Asaas'
+            ]
+        },
+        mercadopago: {
+            name: 'Mercado Pago',
+            description: 'Gateway do Mercado Livre. PIX instantâneo e cartão em até 18x.',
+            link: 'https://www.mercadopago.com.br/developers',
+            tutorial: [
+                'Acesse mercadopago.com.br/developers e faça login',
+                'Vá em "Suas Integrações" → "Criar aplicação"',
+                'Marque "Pagamentos online" e crie a aplicação',
+                'Em "Credenciais de produção", copie o Access Token e Public Key',
+                'Cole ambas as chaves abaixo e configure o Webhook URL'
+            ]
+        },
+        stripe: {
+            name: 'Stripe',
+            description: 'Gateway internacional. Aceita cartões internacionais e pagamentos recorrentes.',
+            link: 'https://dashboard.stripe.com',
+            tutorial: [
+                'Acesse dashboard.stripe.com e faça login',
+                'Vá em Developers → API Keys',
+                'Copie a Publishable key (pk_live_...) e Secret key (sk_live_...)',
+                'Vá em Developers → Webhooks e adicione o endpoint',
+                'Copie o Webhook Signing Secret (whsec_...)'
+            ]
+        }
     };
 
     const webhookUrl = user?.webhook_url ||
@@ -86,7 +160,7 @@ export default function FinancePage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Configurações Financeiras</h1>
-                <p className={styles.subtitle}>Configure seu gateway de pagamento</p>
+                <p className={styles.subtitle}>Configure seu gateway de pagamento para receber pagamentos</p>
             </div>
 
             {/* Webhook URL Section */}
@@ -96,7 +170,7 @@ export default function FinancePage() {
                     URL de Webhook
                 </h2>
                 <p className={styles.sectionDescription}>
-                    Configure esta URL no seu gateway para receber notificações de pagamento
+                    Configure esta URL no seu gateway para receber notificações de pagamento automaticamente
                 </p>
 
                 <div className={styles.webhookBox}>
@@ -115,62 +189,197 @@ export default function FinancePage() {
                 </div>
             </div>
 
-            {/* Gateway Configuration */}
+            {/* Gateway Selection */}
             <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <Wallet size={20} />
-                    Gateway de Pagamento
+                    <CreditCard size={20} />
+                    Escolha seu Gateway
                 </h2>
 
-                <div className={styles.gatewaySelector}>
-                    {['asaas', 'mercadopago', 'stripe'].map((g) => (
+                <div className={styles.gatewayGrid}>
+                    {Object.entries(gatewayInfo).map(([key, info]) => (
                         <button
-                            key={g}
-                            className={`${styles.gatewayOption} ${gateway === g ? styles.active : ''}`}
-                            onClick={() => setGateway(g)}
+                            key={key}
+                            className={`${styles.gatewayCard} ${gateway === key ? styles.active : ''}`}
+                            onClick={() => setGateway(key)}
                         >
-                            {g === 'asaas' && 'Asaas'}
-                            {g === 'mercadopago' && 'Mercado Pago'}
-                            {g === 'stripe' && 'Stripe'}
+                            <div className={styles.gatewayHeader}>
+                                <Building size={24} />
+                                <span className={styles.gatewayName}>{info.name}</span>
+                            </div>
+                            <p className={styles.gatewayDesc}>{info.description}</p>
+                            <a
+                                href={info.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.gatewayLink}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <ExternalLink size={14} />
+                                Acessar
+                            </a>
                         </button>
                     ))}
                 </div>
+            </div>
+
+            {/* Gateway Configuration */}
+            <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>
+                    <Key size={20} />
+                    Configurar {gatewayInfo[gateway]?.name}
+                </h2>
 
                 <TutorialCard
-                    title={`Como configurar ${gateway === 'asaas' ? 'Asaas' : gateway === 'mercadopago' ? 'Mercado Pago' : 'Stripe'}`}
-                    steps={gatewayTutorials[gateway]}
+                    title={`Como configurar ${gatewayInfo[gateway]?.name}`}
+                    steps={gatewayInfo[gateway]?.tutorial || []}
                     defaultOpen={true}
                 />
 
-                <div className={styles.inputGroup}>
-                    <label>
-                        {gateway === 'asaas' && 'Chave de API (Asaas)'}
-                        {gateway === 'mercadopago' && 'Access Token (Mercado Pago)'}
-                        {gateway === 'stripe' && 'Secret Key (Stripe)'}
-                    </label>
-                    <input
-                        type="password"
-                        placeholder={
-                            gateway === 'asaas'
-                                ? '$aact_xxx...'
-                                : gateway === 'mercadopago'
-                                    ? 'APP_USR-xxx...'
-                                    : 'sk_live_xxx...'
-                        }
-                        value={apiToken}
-                        onChange={(e) => setApiToken(e.target.value)}
-                        className={styles.input}
-                    />
-                    <p className={styles.inputHint}>
-                        Sua chave é criptografada e armazenada com segurança
-                    </p>
+                {/* Asaas Fields */}
+                {gateway === 'asaas' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Chave de API *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="$aact_YTU5YTE0M2M2YmU..."
+                                value={credentials.asaas_api_key}
+                                onChange={(e) => handleCredentialChange('asaas_api_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Encontre em: Configurações → Integrações → Gerar Chave de API
+                            </p>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Token do Webhook
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="Token para validar webhooks..."
+                                value={credentials.asaas_webhook_token}
+                                onChange={(e) => handleCredentialChange('asaas_webhook_token', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Encontre em: Configurações → Integrações → Webhooks → Token de autenticação
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Mercado Pago Fields */}
+                {gateway === 'mercadopago' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Access Token *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="APP_USR-xxxxxxxx-xxxx..."
+                                value={credentials.mp_access_token}
+                                onChange={(e) => handleCredentialChange('mp_access_token', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Token de acesso para criar cobranças (servidor)
+                            </p>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Public Key *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="APP_USR-xxxxxxxx-xxxx..."
+                                value={credentials.mp_public_key}
+                                onChange={(e) => handleCredentialChange('mp_public_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Chave pública para checkout (cliente)
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Stripe Fields */}
+                {gateway === 'stripe' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Publishable Key *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="pk_live_xxxxxxxxxxxxxxxx..."
+                                value={credentials.stripe_publishable_key}
+                                onChange={(e) => handleCredentialChange('stripe_publishable_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Chave pública para checkout (começa com pk_)
+                            </p>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Secret Key *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="sk_live_xxxxxxxxxxxxxxxx..."
+                                value={credentials.stripe_secret_key}
+                                onChange={(e) => handleCredentialChange('stripe_secret_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Chave secreta do servidor (começa com sk_)
+                            </p>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Webhook Signing Secret
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="whsec_xxxxxxxxxxxxxxxx..."
+                                value={credentials.stripe_webhook_secret}
+                                onChange={(e) => handleCredentialChange('stripe_webhook_secret', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Para validar webhooks (Developers → Webhooks → Signing secret)
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className={styles.securityNote}>
+                    <AlertCircle size={16} />
+                    <span>Suas credenciais são criptografadas e armazenadas com segurança.</span>
                 </div>
 
                 {user?.gateway_preference && (
                     <div className={styles.currentGateway}>
-                        <AlertCircle size={16} />
+                        <Check size={16} />
                         <span>
-                            Gateway atual: <strong>{user.gateway_preference}</strong>
+                            Gateway atual: <strong>{gatewayInfo[user.gateway_preference]?.name || user.gateway_preference}</strong>
                             {' '} (configurado)
                         </span>
                     </div>
@@ -179,7 +388,7 @@ export default function FinancePage() {
                 <button
                     className={styles.saveButton}
                     onClick={handleSave}
-                    disabled={saving || !apiToken}
+                    disabled={saving}
                 >
                     {saving ? (
                         <>
