@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import {
     LayoutDashboard,
     Users,
@@ -13,7 +14,8 @@ import {
     ChevronRight,
     Shield,
     CreditCard,
-    Megaphone
+    Megaphone,
+    Loader2
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -27,9 +29,37 @@ const adminMenuItems = [
 
 export default function AdminSidebar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
+    const { logout } = useAuth();
 
     const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+
+        // Small delay for animation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        logout();
+        router.push('/login');
+    };
+
+    // Logout animation overlay
+    if (isLoggingOut) {
+        return (
+            <div className={styles.logoutOverlay}>
+                <div className={styles.logoutContent}>
+                    <div className={styles.logoutIcon}>
+                        <Loader2 size={32} className={styles.spinnerLogout} />
+                    </div>
+                    <h3>Saindo...</h3>
+                    <p>Até logo!</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -91,11 +121,12 @@ export default function AdminSidebar() {
                             <span className={styles.userRole}>Administrador</span>
                         </div>
                     </div>
-                    <Link href="/login" className={styles.logoutButton}>
+                    <button onClick={handleLogout} className={styles.logoutButton}>
                         <LogOut size={18} />
-                    </Link>
+                    </button>
                 </div>
             </aside>
         </>
     );
 }
+

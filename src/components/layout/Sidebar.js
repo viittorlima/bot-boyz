@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
     Bot,
@@ -16,7 +16,8 @@ import {
     ExternalLink,
     Eye,
     Megaphone,
-    Settings
+    Settings,
+    Loader2
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.css';
@@ -33,15 +34,42 @@ const menuItems = [
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
     const { user, logout } = useAuth();
 
     const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+
+        // Small delay for animation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        logout();
+        router.push('/login');
+    };
 
     const getInitials = (name) => {
         if (!name) return 'U';
         return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     };
+
+    // Logout animation overlay
+    if (isLoggingOut) {
+        return (
+            <div className={styles.logoutOverlay}>
+                <div className={styles.logoutContent}>
+                    <div className={styles.logoutIcon}>
+                        <Loader2 size={32} className={styles.spinnerLogout} />
+                    </div>
+                    <h3>Saindo...</h3>
+                    <p>Até logo, {user?.name?.split(' ')[0] || 'Criador'}!</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -117,7 +145,7 @@ export default function Sidebar() {
                             <span className={styles.userRole}>Criador</span>
                         </div>
                     </div>
-                    <button onClick={logout} className={styles.logoutButton}>
+                    <button onClick={handleLogout} className={styles.logoutButton}>
                         <LogOut size={18} />
                     </button>
                 </div>
@@ -125,3 +153,4 @@ export default function Sidebar() {
         </>
     );
 }
+
