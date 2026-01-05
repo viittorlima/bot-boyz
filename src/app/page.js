@@ -357,9 +357,9 @@ export default function LandingPage() {
         </div>
 
         <div className={styles.footerLinks}>
-          <a href="#" className={styles.footerLink}>Termos</a>
-          <a href="#" className={styles.footerLink}>Privacidade</a>
-          <a href="#" className={styles.footerLink}>Suporte</a>
+          <a href="/termos" className={styles.footerLink}>Termos de Uso</a>
+          <a href="/termos#privacidade" className={styles.footerLink}>Privacidade</a>
+          <a href="/termos#responsabilidade" className={styles.footerLink}>Responsabilidade</a>
         </div>
 
         <p className={styles.footerCopy}>© 2026 Boyz Vip. Todos os direitos reservados.</p>
