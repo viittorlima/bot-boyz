@@ -289,22 +289,6 @@ export default function BotEditPage({ params }) {
                                 Use {'{nome}'} para incluir o nome do assinante
                             </span>
                         </div>
-
-                        <div className={styles.toggleGroup}>
-                            <div className={styles.toggleInfo}>
-                                <span className={styles.toggleLabel}>Solicitar Mídia no Início</span>
-                                <span className={styles.toggleDesc}>
-                                    Pedir que o assinante envie uma foto/vídeo ao entrar
-                                </span>
-                            </div>
-                            <button
-                                type="button"
-                                className={`${styles.toggle} ${formData.request_media_on_start ? styles.active : ''}`}
-                                onClick={() => setFormData({ ...formData, request_media_on_start: !formData.request_media_on_start })}
-                            >
-                                <span className={styles.toggleDot} />
-                            </button>
-                        </div>
                     </div>
                 </div>
             )}
