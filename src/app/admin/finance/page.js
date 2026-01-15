@@ -8,6 +8,25 @@ import {
 import api from '@/services/api';
 import styles from './page.module.css';
 
+// Helper to render password input with toggle
+const PasswordInput = ({ value, onChange, placeholder, fieldName, showSecrets, toggleSecret }) => (
+    <div className={styles.passwordWrapper}>
+        <input
+            type={showSecrets[fieldName] ? "text" : "password"}
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+            type="button"
+            className={styles.eyeButton}
+            onClick={() => toggleSecret(fieldName)}
+        >
+            {showSecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+    </div>
+);
+
 export default function AdminFinancePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -75,24 +94,7 @@ export default function AdminFinancePage() {
         setShowSecrets(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
-    // Helper to render password input with toggle
-    const PasswordInput = ({ value, onChange, placeholder, fieldName, showSecrets, toggleSecret }) => (
-        <div className={styles.passwordWrapper}>
-            <input
-                type={showSecrets[fieldName] ? "text" : "password"}
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-            />
-            <button
-                type="button"
-                className={styles.eyeButton}
-                onClick={() => toggleSecret(fieldName)}
-            >
-                {showSecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-        </div>
-    );
+
 
     if (loading) {
         return (
