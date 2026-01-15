@@ -25,7 +25,7 @@ const adminMenuItems = [
     { href: '/admin', label: 'Visão Geral', icon: LayoutDashboard },
     { href: '/admin/creators', label: 'Criadores', icon: Users },
     { href: '/admin/mailing', label: 'Mailing', icon: Mail },
-    { href: '/dashboard/ranking', label: 'Ranking', icon: Trophy }, // Admin view same ranking page
+    { href: '/admin/ranking', label: 'Ranking', icon: Trophy },
     { href: '/admin/finance', label: 'Financeiro', icon: CreditCard },
     { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ];
