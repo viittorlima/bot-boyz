@@ -2,20 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import {
-    Mail, Send, Loader2, CheckCircle, AlertCircle, Image, Video, Type, ExternalLink, Bot
+    Mail, Send, Loader2, CheckCircle, AlertCircle, Image, Video, Type, ExternalLink, Bot, Users
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
 
 export default function CreatorMailingPage() {
     const [bots, setBots] = useState([]);
+    const [plans, setPlans] = useState([]);
     const [loadingBots, setLoadingBots] = useState(true);
     const [sending, setSending] = useState(false);
     const [result, setResult] = useState({ type: '', text: '' });
 
     // Form State
     const [formData, setFormData] = useState({
-        bot_id: 'all',
+        bot_id: '',
         type: 'text',
         filter: 'all',
         message: '',
@@ -31,11 +32,24 @@ export default function CreatorMailingPage() {
         loadBots();
     }, []);
 
+    // Load plans when bot changes
+    useEffect(() => {
+        if (formData.bot_id && formData.bot_id !== 'all') {
+            loadPlans(formData.bot_id);
+        } else {
+            setPlans([]);
+        }
+    }, [formData.bot_id]);
+
     const loadBots = async () => {
         try {
             const res = await api.get('/bots');
             if (res.data && res.data.bots) {
                 setBots(res.data.bots);
+                // Auto-select first bot if available
+                if (res.data.bots.length > 0) {
+                    setFormData(prev => ({ ...prev, bot_id: res.data.bots[0].id }));
+                }
             }
         } catch (error) {
             console.error('Error loading bots:', error);
@@ -44,8 +58,29 @@ export default function CreatorMailingPage() {
         }
     };
 
+    const loadPlans = async (botId) => {
+        try {
+            const res = await api.get(`/bots/${botId}`);
+            if (res.data && res.data.bot && res.data.bot.plans) {
+                setPlans(res.data.bot.plans);
+            }
+        } catch (error) {
+            console.error('Error loading plans:', error);
+            setPlans([]);
+        }
+    };
+
+    const handleBotSelect = (botId) => {
+        setFormData({ ...formData, bot_id: botId, filter: 'all' });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.bot_id) {
+            setResult({ type: 'error', text: 'Selecione um bot.' });
+            return;
+        }
 
         if (!formData.message && !formData.media_url) {
             setResult({ type: 'error', text: 'Digite uma mensagem ou adicione mídia.' });
@@ -73,14 +108,14 @@ export default function CreatorMailingPage() {
             });
 
             // Reset form
-            setFormData({
-                bot_id: 'all',
+            setFormData(prev => ({
+                ...prev,
                 type: 'text',
                 filter: 'all',
                 message: '',
                 media_url: '',
                 buttons: []
-            });
+            }));
             setButtonText('');
             setButtonUrl('');
         } catch (error) {
@@ -89,6 +124,8 @@ export default function CreatorMailingPage() {
             setSending(false);
         }
     };
+
+    const selectedBot = bots.find(b => b.id === formData.bot_id);
 
     return (
         <div className={styles.container}>
@@ -104,28 +141,33 @@ export default function CreatorMailingPage() {
                 {/* Bot Selection */}
                 <div className={styles.section}>
                     <h3>Selecionar Bot</h3>
-                    <div className={styles.botGrid}>
-                        <button
-                            type="button"
-                            className={`${styles.botCard} ${formData.bot_id === 'all' ? styles.active : ''}`}
-                            onClick={() => setFormData({ ...formData, bot_id: 'all' })}
-                        >
-                            <Bot size={20} />
-                            <span>Todos os Bots</span>
-                        </button>
-                        {bots.map(bot => (
+                    {loadingBots ? (
+                        <p className={styles.loading}>Carregando bots...</p>
+                    ) : bots.length === 0 ? (
+                        <p className={styles.loading}>Você não possui bots cadastrados.</p>
+                    ) : (
+                        <div className={styles.botGrid}>
                             <button
-                                key={bot.id}
                                 type="button"
-                                className={`${styles.botCard} ${formData.bot_id === bot.id ? styles.active : ''}`}
-                                onClick={() => setFormData({ ...formData, bot_id: bot.id })}
+                                className={`${styles.botCard} ${formData.bot_id === 'all' ? styles.active : ''}`}
+                                onClick={() => handleBotSelect('all')}
                             >
                                 <Bot size={20} />
-                                <span>@{bot.username || bot.name}</span>
+                                <span>Todos os Bots</span>
                             </button>
-                        ))}
-                    </div>
-                    {loadingBots && <p className={styles.loading}>Carregando bots...</p>}
+                            {bots.map(bot => (
+                                <button
+                                    key={bot.id}
+                                    type="button"
+                                    className={`${styles.botCard} ${formData.bot_id === bot.id ? styles.active : ''}`}
+                                    onClick={() => handleBotSelect(bot.id)}
+                                >
+                                    <Bot size={20} />
+                                    <span>@{bot.username || bot.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Message Type */}
@@ -159,7 +201,7 @@ export default function CreatorMailingPage() {
                     </div>
                 </div>
 
-                {/* Filter */}
+                {/* Recipients Filter */}
                 <div className={styles.section}>
                     <h3>Destinatários</h3>
                     <select
@@ -170,7 +212,22 @@ export default function CreatorMailingPage() {
                         <option value="all">Todos os assinantes</option>
                         <option value="active">Assinantes ativos (VIPs)</option>
                         <option value="expired">Assinaturas expiradas</option>
+                        {plans.length > 0 && (
+                            <optgroup label="Por Plano">
+                                {plans.map(plan => (
+                                    <option key={plan.id} value={`plan_${plan.id}`}>
+                                        {plan.name} - R$ {parseFloat(plan.price).toFixed(2).replace('.', ',')}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        )}
                     </select>
+                    {selectedBot && (
+                        <span className={styles.hint}>
+                            <Users size={12} style={{ display: 'inline', marginRight: 4 }} />
+                            Enviando para @{selectedBot.username || selectedBot.name}
+                        </span>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -208,6 +265,9 @@ export default function CreatorMailingPage() {
                 {/* Promo Button */}
                 <div className={styles.section}>
                     <h3>Botão de Promoção (Opcional)</h3>
+                    <p className={styles.hint} style={{ marginBottom: 12 }}>
+                        Adicione um botão clicável que aparece abaixo da mensagem no Telegram
+                    </p>
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label>Texto do Botão</label>
