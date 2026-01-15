@@ -1,0 +1,293 @@
+
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.header {
+    margin-bottom: 3rem;
+}
+
+.titleWrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.titleIcon {
+    color: var(--primary);
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* Podium */
+.podiumContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    height: 350px;
+}
+
+.podiumItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    max-width: 250px;
+}
+
+.podiumInfo {
+    margin-bottom: 1rem;
+}
+
+.avatarPlaceholder {
+    width: 64px;
+    height: 64px;
+    background: var(--surface-hover);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.rankNumber {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.creatorName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.revenue {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.podiumBar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* First Place */
+.first {
+    z-index: 2;
+}
+
+.first .podiumBar {
+    height: 180px;
+    background: linear-gradient(180deg, #FFD700 0%, #B8860B 100%);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.first .avatarPlaceholder {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+    border: 3px solid #FFD700;
+}
+
+.crownIcon {
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Second Place */
+.second .podiumBar {
+    height: 130px;
+    background: linear-gradient(180deg, #C0C0C0 0%, #808080 100%);
+}
+
+.second .avatarPlaceholder {
+    border: 3px solid #C0C0C0;
+}
+
+.medalIcon {
+    margin-bottom: 0.5rem;
+}
+
+/* Third Place */
+.third .podiumBar {
+    height: 100px;
+    background: linear-gradient(180deg, #CD7F32 0%, #8B4513 100%);
+}
+
+.third .avatarPlaceholder {
+    border: 3px solid #CD7F32;
+}
+
+/* List */
+.listContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: transform 0.2s ease;
+}
+
+.listItem:hover {
+    transform: translateX(4px);
+    background: var(--surface-hover);
+}
+
+.listRank {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    min-width: 40px;
+}
+
+.listInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.listAvatar {
+    width: 40px;
+    height: 40px;
+    background: var(--background);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.listName {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.listRevenue {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.trendIcon {
+    color: var(--success);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .podiumContainer {
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .podiumItem {
+        width: 100%;
+        max-width: 100%;
+        flex-direction: row;
+        text-align: left;
+        padding: 1rem;
+        background: var(--surface);
+        border-radius: 12px;
+    }
+
+    /* Reverse order on mobile to show #1 first */
+    .podiumContainer {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .first { order: 1; }
+    .second { order: 2; }
+    .third { order: 3; }
+
+    .podiumBar {
+        display: none;
+    }
+
+    .avatarPlaceholder {
+        margin-bottom: 0;
+        margin-right: 1rem;
+    }
+
+    .crownIcon, .medalIcon {
+        display: none;
+    }
+    
+    .podiumInfo {
+        margin-bottom: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .rankNumber {
+        margin-right: 1rem;
+    }
+}

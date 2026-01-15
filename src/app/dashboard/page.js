@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, Users, Clock, TrendingUp, Loader2, Megaphone, Percent, Calendar } from 'lucide-react';
+import { DollarSign, Users, Clock, TrendingUp, Loader2, Calendar } from 'lucide-react';
 import { statsAPI } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/context/AuthContext';
@@ -68,10 +68,10 @@ export default function DashboardPage() {
             icon: Users
         },
         {
-            label: 'Taxa Atual',
-            value: `${user?.fee_rate || 5}%`,
-            icon: Percent,
-            subtext: user?.promotion_active ? '📢 Plano Divulgação' : 'Plano Padrão'
+            label: 'Taxa por Venda',
+            value: 'R$ 0,55',
+            icon: DollarSign,
+            subtext: 'Valor fixo por transação'
         }
     ];
 

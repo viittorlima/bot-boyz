@@ -27,18 +27,18 @@ import styles from './page.module.css';
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState(null);
   const [activeTutorial, setActiveTutorial] = useState(null);
-  const [platformFee, setPlatformFee] = useState(10); // Default 10%
+  const [fixedFee, setFixedFee] = useState(0.55); // Default R$ 0.55
 
   // Fetch platform fee from admin settings
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const response = await api.get('/public/settings');
-        if (response.data?.platformFee) {
-          setPlatformFee(response.data.platformFee);
+        if (response.data?.fixed_fee_amount) {
+          setFixedFee(response.data.fixed_fee_amount);
         }
       } catch (error) {
-        console.log('Using default platform fee');
+        console.log('Using default fixed fee');
       }
     };
     fetchSettings();
@@ -105,8 +105,7 @@ export default function LandingPage() {
 
   const faqs = [
     { q: 'Quais formas de pagamento são aceitas?', a: 'Aceitamos PIX, cartão de crédito em até 12x e boleto bancário.' },
-    { q: 'Qual é a taxa da plataforma?', a: 'Taxa base de 5%. Opcionalmente, você pode optar pelo plano de divulgação (10%) e ter seu conteúdo promovido nos canais oficiais com até 3 divulgações por mês.' },
-    { q: 'Como funciona a divulgação?', a: 'Ao optar pelo plano de 10%, você ganha direito a 3 divulgações mensais nos canais oficiais da plataforma. Mínimo de 30 dias ativo.' },
+    { q: 'Qual é a taxa da plataforma?', a: `Cobramos apenas R$ ${fixedFee.toFixed(2).replace('.', ',')} por venda aprovada. Sem mensalidade, sem taxa percentual!` },
     { q: 'Posso ter mais de um grupo VIP?', a: 'Sim! Você pode conectar quantos bots quiser e gerenciar múltiplos grupos.' },
     { q: 'Como recebo os pagamentos?', a: 'Os pagamentos vão direto para sua conta via gateway configurado. Você pode sacar a qualquer momento.' },
   ];
@@ -150,7 +149,7 @@ export default function LandingPage() {
 
           <p className={styles.heroSubtitle}>
             Crie grupos VIP, gerencie assinaturas e receba pagamentos de forma 100% automática.
-            <span className={styles.heroHighlight}> Taxa a partir de 5%.</span>
+            <span className={styles.heroHighlight}> Apenas R$ {fixedFee.toFixed(2).replace('.', ',')} por venda!</span>
           </p>
 
           <div className={styles.ctaGroup}>

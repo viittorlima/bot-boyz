@@ -99,37 +99,26 @@ export default function AdminFinancePage() {
             {/* Platform Fee */}
             <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>
-                    <Percent size={20} />
+                    <DollarSign size={20} />
                     Taxa da Plataforma (Split)
                 </h2>
 
                 <div className={styles.feeCards}>
                     <div className={styles.feeCard}>
                         <div className={styles.feeCardIcon}>
-                            <Shield size={24} />
+                            <DollarSign size={24} />
                         </div>
                         <div className={styles.feeCardContent}>
-                            <h4>Plano Padrão</h4>
-                            <div className={styles.feeValue}>5%</div>
-                            <p>Taxa fixa para criadores no plano padrão</p>
-                        </div>
-                    </div>
-
-                    <div className={`${styles.feeCard} ${styles.promo}`}>
-                        <div className={styles.feeCardIcon}>
-                            <Megaphone size={24} />
-                        </div>
-                        <div className={styles.feeCardContent}>
-                            <h4>Plano Divulgação</h4>
-                            <div className={styles.feeValue}>10%</div>
-                            <p>Criadores que optam pela divulgação nos canais</p>
+                            <h4>Taxa Fixa</h4>
+                            <div className={styles.feeValue}>R$ 0,55</div>
+                            <p>Valor fixo cobrado por venda aprovada</p>
                         </div>
                     </div>
                 </div>
 
                 <div className={styles.feeNote}>
                     <Info size={16} />
-                    <span>A taxa é definida <strong>por criador</strong> no momento do cadastro ou na página de Divulgações. Você recebe automaticamente a comissão via split de pagamento.</span>
+                    <span>A taxa fixa de R$ 0,55 é automaticamente deduzida de cada venda via split de pagamento. O criador recebe o restante do valor diretamente.</span>
                 </div>
             </div>
 

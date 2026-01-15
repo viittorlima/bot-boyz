@@ -15,8 +15,8 @@ import {
     ChevronRight,
     ExternalLink,
     Eye,
-    Megaphone,
     Settings,
+    Trophy,
     Loader2
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -26,8 +26,8 @@ const menuItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/bots', label: 'Meus Bots', icon: Bot },
     { href: '/dashboard/sales', label: 'Vendas', icon: Receipt },
+    { href: '/dashboard/ranking', label: 'Ranking', icon: Trophy },
     { href: '/dashboard/finance', label: 'Financeiro', icon: CreditCard },
-    { href: '/dashboard/promotion', label: 'Divulgação', icon: Megaphone },
     { href: '/dashboard/profile', label: 'Minha Página', icon: Eye },
     { href: '/dashboard/settings', label: 'Configurações', icon: Settings },
 ];

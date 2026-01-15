@@ -15,6 +15,7 @@ import {
     Shield,
     CreditCard,
     Megaphone,
+    Mail,
     Loader2
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
@@ -22,7 +23,7 @@ import styles from './Sidebar.module.css';
 const adminMenuItems = [
     { href: '/admin', label: 'Visão Geral', icon: LayoutDashboard },
     { href: '/admin/creators', label: 'Criadores', icon: Users },
-    { href: '/admin/promotions', label: 'Divulgações', icon: Megaphone },
+    { href: '/admin/mailing', label: 'Mailing', icon: Mail },
     { href: '/admin/finance', label: 'Financeiro', icon: CreditCard },
     { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ];

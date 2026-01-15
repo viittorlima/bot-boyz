@@ -151,9 +151,8 @@ export default function AdminCreatorsPage() {
                                     </td>
                                     <td className={styles.email}>{creator.email}</td>
                                     <td>
-                                        <span className={`${styles.feeBadge} ${creator.promotion_active ? styles.promo : ''}`}>
-                                            {creator.fee_rate || 5}%
-                                            {creator.promotion_active && ' 📢'}
+                                        <span className={styles.feeBadge}>
+                                            R$ 0,55
                                         </span>
                                     </td>
                                     <td>{creator.botsCount || 0}</td>

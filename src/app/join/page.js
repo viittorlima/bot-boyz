@@ -48,7 +48,7 @@ export default function JoinPage() {
 
     const features = [
         { icon: Shield, title: 'Sem Mensalidade', desc: 'Pague apenas por venda' },
-        { icon: DollarSign, title: 'Taxa a partir de 5%', desc: 'A menor do mercado' },
+        { icon: DollarSign, title: 'R$ 0,55 por venda', desc: 'Taxa fixa, sem surpresas' },
         { icon: Zap, title: '100% Automático', desc: 'Sem trabalho manual' }
     ];
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
     Settings, Globe, Shield, Loader2, Save, MessageCircle,
-    FileText, User, Lock, Eye, EyeOff, Check
+    FileText, User, Lock, Eye, EyeOff, Check, CreditCard
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
@@ -26,7 +26,15 @@ export default function AdminSettingsPage() {
         supportTelegramLink: 'https://t.me/suporte',
         enableRegistration: true,
         requireEmailVerification: false,
-        maintenanceMode: false
+        maintenanceMode: false,
+        fixed_fee_amount: 0.55,
+        // SyncPay fields
+        syncpay_api_key: '',
+        syncpay_platform_recipient_id: '',
+        syncpay_default_recipient_id: '',
+        // ParadisePag fields
+        paradisepag_public_key: '',
+        paradisepag_secret_key: ''
     });
 
     // Legal content
@@ -262,16 +270,6 @@ export default function AdminSettingsPage() {
                                     onChange={(e) => setSettings({ ...settings, supportTelegramLink: e.target.value })}
                                 />
                             </div>
-
-                            <div className={styles.field}>
-                                <label>Link para Envio de Divulgação</label>
-                                <input
-                                    type="url"
-                                    placeholder="https://t.me/suporte"
-                                    value={settings.promotionContactLink}
-                                    onChange={(e) => setSettings({ ...settings, promotionContactLink: e.target.value })}
-                                />
-                            </div>
                         </div>
                     </div>
 
@@ -307,6 +305,97 @@ export default function AdminSettingsPage() {
                                 >
                                     <div className={styles.toggleThumb} />
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Finance Settings */}
+                    <div className={styles.section}>
+                        <h2 className={styles.sectionTitle}>
+                            <CreditCard size={20} />
+                            Financeiro
+                        </h2>
+
+                        <div className={styles.fieldsGrid}>
+                            <div className={styles.field}>
+                                <label>Taxa Fixa por Transação (R$)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={settings.fixed_fee_amount}
+                                    onChange={(e) => setSettings({ ...settings, fixed_fee_amount: parseFloat(e.target.value) })}
+                                />
+                                <span className={styles.fieldHint}>Valor fixo cobrado sobre cada venda aprovada</span>
+                            </div>
+
+                            {/* Payment Gateways */}
+                            <div className={styles.section}>
+                                <h2 className={styles.sectionTitle}>
+                                    <CreditCard size={20} />
+                                    Gateways de Pagamento
+                                </h2>
+
+                                {/* SyncPay */}
+                                <div className={styles.gatewayCard}>
+                                    <h3 className={styles.gatewayTitle}>SyncPay</h3>
+                                    <div className={styles.fieldsGrid}>
+                                        <div className={styles.field}>
+                                            <label>API Key</label>
+                                            <input
+                                                type="password"
+                                                placeholder="Sua API Key do SyncPay"
+                                                value={settings.syncpay_api_key || ''}
+                                                onChange={(e) => setSettings({ ...settings, syncpay_api_key: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className={styles.field}>
+                                            <label>Platform Recipient ID</label>
+                                            <input
+                                                type="text"
+                                                placeholder="ID do recebedor da plataforma"
+                                                value={settings.syncpay_platform_recipient_id || ''}
+                                                onChange={(e) => setSettings({ ...settings, syncpay_platform_recipient_id: e.target.value })}
+                                            />
+                                            <span className={styles.fieldHint}>ID para receber a taxa fixa</span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <label>Default Recipient ID</label>
+                                            <input
+                                                type="text"
+                                                placeholder="ID padrão do recebedor"
+                                                value={settings.syncpay_default_recipient_id || ''}
+                                                onChange={(e) => setSettings({ ...settings, syncpay_default_recipient_id: e.target.value })}
+                                            />
+                                            <span className={styles.fieldHint}>Usado quando criador não tem wallet configurada</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* ParadisePag */}
+                                <div className={styles.gatewayCard}>
+                                    <h3 className={styles.gatewayTitle}>ParadisePag</h3>
+                                    <div className={styles.fieldsGrid}>
+                                        <div className={styles.field}>
+                                            <label>Public Key</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Sua Public Key"
+                                                value={settings.paradisepag_public_key || ''}
+                                                onChange={(e) => setSettings({ ...settings, paradisepag_public_key: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className={styles.field}>
+                                            <label>Secret Key</label>
+                                            <input
+                                                type="password"
+                                                placeholder="Sua Secret Key"
+                                                value={settings.paradisepag_secret_key || ''}
+                                                onChange={(e) => setSettings({ ...settings, paradisepag_secret_key: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
