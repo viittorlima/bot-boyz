@@ -327,7 +327,7 @@ export default function CreatorMailingPage() {
 
                     <div className={styles.row}>
                         <div className={styles.field}>
-                            <label>Texto do Botão</label>
+                            <label>Título do Botão</label>
                             <input
                                 type="text"
                                 value={buttonText}
@@ -339,7 +339,7 @@ export default function CreatorMailingPage() {
 
                         {formData.isCheckout ? (
                             <div className={styles.field}>
-                                <label>Valor da Oferta (R$)</label>
+                                <label>Valor da Promoção (R$)</label>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -355,12 +355,12 @@ export default function CreatorMailingPage() {
                             </div>
                         ) : (
                             <div className={styles.field}>
-                                <label>Link do Botão</label>
+                                <label>Link de Destino</label>
                                 <input
                                     type="url"
                                     value={buttonUrl}
                                     onChange={e => setButtonUrl(e.target.value)}
-                                    placeholder="https://..."
+                                    placeholder="https://"
                                     className={styles.input}
                                 />
                             </div>
