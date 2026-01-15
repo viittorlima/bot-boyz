@@ -17,7 +17,8 @@ import {
     Eye,
     Settings,
     Trophy,
-    Loader2
+    Loader2,
+    Mail
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './Sidebar.module.css';
@@ -27,6 +28,7 @@ const menuItems = [
     { href: '/dashboard/bots', label: 'Meus Bots', icon: Bot },
     { href: '/dashboard/sales', label: 'Vendas', icon: Receipt },
     { href: '/dashboard/ranking', label: 'Ranking', icon: Trophy },
+    { href: '/dashboard/mailing', label: 'Mailing', icon: Mail },
     { href: '/dashboard/finance', label: 'Financeiro', icon: CreditCard },
     { href: '/dashboard/profile', label: 'Minha Página', icon: Eye },
     { href: '/dashboard/settings', label: 'Configurações', icon: Settings },

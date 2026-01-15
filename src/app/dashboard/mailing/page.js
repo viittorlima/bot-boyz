@@ -2,17 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import {
-    Mail, Send, Loader2, CheckCircle, AlertCircle, Image, Video, Type, ExternalLink
+    Mail, Send, Loader2, CheckCircle, AlertCircle, Image, Video, Type, ExternalLink, Bot
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
 
-export default function AdminMailingPage() {
+export default function CreatorMailingPage() {
+    const [bots, setBots] = useState([]);
+    const [loadingBots, setLoadingBots] = useState(true);
     const [sending, setSending] = useState(false);
     const [result, setResult] = useState({ type: '', text: '' });
 
     // Form State
     const [formData, setFormData] = useState({
+        bot_id: 'all',
         type: 'text',
         filter: 'all',
         message: '',
@@ -23,6 +26,23 @@ export default function AdminMailingPage() {
     // Button state
     const [buttonText, setButtonText] = useState('');
     const [buttonUrl, setButtonUrl] = useState('');
+
+    useEffect(() => {
+        loadBots();
+    }, []);
+
+    const loadBots = async () => {
+        try {
+            const res = await api.get('/bots');
+            if (res.data && res.data.bots) {
+                setBots(res.data.bots);
+            }
+        } catch (error) {
+            console.error('Error loading bots:', error);
+        } finally {
+            setLoadingBots(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,7 +62,7 @@ export default function AdminMailingPage() {
                 buttons.push({ text: buttonText, url: buttonUrl });
             }
 
-            const response = await api.post('/admin/broadcasts', {
+            const response = await api.post('/creator/broadcasts', {
                 ...formData,
                 buttons
             });
@@ -54,6 +74,7 @@ export default function AdminMailingPage() {
 
             // Reset form
             setFormData({
+                bot_id: 'all',
                 type: 'text',
                 filter: 'all',
                 message: '',
@@ -74,12 +95,39 @@ export default function AdminMailingPage() {
             <div className={styles.header}>
                 <h1 className={styles.title}>
                     <Mail size={28} />
-                    Mailing Admin
+                    Mailing
                 </h1>
-                <p className={styles.subtitle}>Envie mensagens para todos os usuários da plataforma</p>
+                <p className={styles.subtitle}>Envie mensagens para os assinantes dos seus bots</p>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.card}>
+                {/* Bot Selection */}
+                <div className={styles.section}>
+                    <h3>Selecionar Bot</h3>
+                    <div className={styles.botGrid}>
+                        <button
+                            type="button"
+                            className={`${styles.botCard} ${formData.bot_id === 'all' ? styles.active : ''}`}
+                            onClick={() => setFormData({ ...formData, bot_id: 'all' })}
+                        >
+                            <Bot size={20} />
+                            <span>Todos os Bots</span>
+                        </button>
+                        {bots.map(bot => (
+                            <button
+                                key={bot.id}
+                                type="button"
+                                className={`${styles.botCard} ${formData.bot_id === bot.id ? styles.active : ''}`}
+                                onClick={() => setFormData({ ...formData, bot_id: bot.id })}
+                            >
+                                <Bot size={20} />
+                                <span>@{bot.username || bot.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                    {loadingBots && <p className={styles.loading}>Carregando bots...</p>}
+                </div>
+
                 {/* Message Type */}
                 <div className={styles.section}>
                     <h3>Tipo de Mensagem</h3>
@@ -119,10 +167,9 @@ export default function AdminMailingPage() {
                         onChange={e => setFormData({ ...formData, filter: e.target.value })}
                         className={styles.select}
                     >
-                        <option value="all">Todos os usuários</option>
+                        <option value="all">Todos os assinantes</option>
                         <option value="active">Assinantes ativos (VIPs)</option>
                         <option value="expired">Assinaturas expiradas</option>
-                        <option value="pending">Pagamentos pendentes</option>
                     </select>
                 </div>
 
@@ -160,7 +207,7 @@ export default function AdminMailingPage() {
 
                 {/* Promo Button */}
                 <div className={styles.section}>
-                    <h3>Botão de Ação (Promoção)</h3>
+                    <h3>Botão de Promoção (Opcional)</h3>
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label>Texto do Botão</label>
@@ -168,7 +215,7 @@ export default function AdminMailingPage() {
                                 type="text"
                                 value={buttonText}
                                 onChange={e => setButtonText(e.target.value)}
-                                placeholder="Ex: 🔥 Aproveitar Oferta"
+                                placeholder="Ex: 🔥 Ver Oferta"
                                 className={styles.input}
                             />
                         </div>
@@ -218,16 +265,16 @@ export default function AdminMailingPage() {
                 )}
 
                 {/* Submit */}
-                <button type="submit" className={styles.submitBtn} disabled={sending}>
+                <button type="submit" className={styles.submitBtn} disabled={sending || bots.length === 0}>
                     {sending ? (
                         <>
                             <Loader2 className={styles.spinner} size={18} />
-                            Enviando para todos...
+                            Enviando...
                         </>
                     ) : (
                         <>
                             <Send size={18} />
-                            Enviar Broadcast
+                            Enviar para Assinantes
                         </>
                     )}
                 </button>
