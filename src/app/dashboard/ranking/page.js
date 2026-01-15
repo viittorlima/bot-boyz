@@ -40,6 +40,36 @@ export default function RankingPage() {
     const top3 = ranking.slice(0, 3);
     const others = ranking.slice(3, 10);
 
+    // Empty state when no ranking data
+    if (ranking.length === 0) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <div className={styles.titleWrapper}>
+                        <Trophy size={32} className={styles.titleIcon} />
+                        <div>
+                            <h1 className={styles.title}>Ranking Mensal</h1>
+                            <p className={styles.subtitle}>Os Top 10 criadores que mais faturaram este mês</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>
+                        <Trophy size={64} />
+                    </div>
+                    <h2 className={styles.emptyTitle}>Nenhum faturamento ainda</h2>
+                    <p className={styles.emptyText}>
+                        O ranking será atualizado assim que houver vendas neste mês.
+                    </p>
+                    <p className={styles.emptyHint}>
+                        🏆 Seja o primeiro a aparecer no pódio!
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>

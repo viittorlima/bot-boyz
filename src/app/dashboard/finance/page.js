@@ -29,7 +29,12 @@ export default function FinancePage() {
         // Stripe
         stripe_secret_key: '',
         stripe_publishable_key: '',
-        stripe_webhook_secret: ''
+        stripe_webhook_secret: '',
+        // SyncPay
+        syncpay_api_key: '',
+        // ParadisePag
+        paradisepag_public_key: '',
+        paradisepag_secret_key: ''
     });
 
     useEffect(() => {
@@ -86,6 +91,25 @@ export default function FinancePage() {
                 publishable_key: credentials.stripe_publishable_key,
                 webhook_secret: credentials.stripe_webhook_secret
             };
+        } else if (gateway === 'syncpay') {
+            if (!credentials.syncpay_api_key) {
+                showToast('Informe a API Key do SyncPay', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                api_key: credentials.syncpay_api_key
+            };
+        } else if (gateway === 'paradisepag') {
+            if (!credentials.paradisepag_public_key || !credentials.paradisepag_secret_key) {
+                showToast('Preencha Public Key e Secret Key do ParadisePag', 'error');
+                return;
+            }
+            isValid = true;
+            gatewayCredentials = {
+                public_key: credentials.paradisepag_public_key,
+                secret_key: credentials.paradisepag_secret_key
+            };
         }
 
         if (!isValid) return;
@@ -103,7 +127,10 @@ export default function FinancePage() {
                 mp_public_key: '',
                 stripe_secret_key: '',
                 stripe_publishable_key: '',
-                stripe_webhook_secret: ''
+                stripe_webhook_secret: '',
+                syncpay_api_key: '',
+                paradisepag_public_key: '',
+                paradisepag_secret_key: ''
             });
         } catch (error) {
             console.error('Error saving gateway:', error);
@@ -181,6 +208,34 @@ export default function FinancePage() {
                 'Copie a Publishable key (pk_live_...) e Secret key (sk_live_...)',
                 'Vá em Developers → Webhooks e adicione o endpoint',
                 'Copie o Webhook Signing Secret (whsec_...)'
+            ]
+        },
+        syncpay: {
+            name: 'SyncPay',
+            description: 'Gateway brasileiro com PIX instantâneo. Taxa competitiva.',
+            paymentMethods: ['PIX'],
+            badge: '⚡ PIX Rápido',
+            link: 'https://syncpay.com.br',
+            tutorial: [
+                'Crie sua conta no SyncPay',
+                'Acesse o painel e vá em Configurações',
+                'Gere uma nova API Key',
+                'Copie a API Key e cole abaixo',
+                'Configure o Webhook URL'
+            ]
+        },
+        paradisepag: {
+            name: 'ParadisePag',
+            description: 'Gateway especializado em conteúdo digital.',
+            paymentMethods: ['PIX', 'Cartão'],
+            badge: '🌴 PIX + Cartão',
+            link: 'https://paradisepag.com',
+            tutorial: [
+                'Crie sua conta no ParadisePag',
+                'Acesse o painel e vá em API',
+                'Copie a Public Key e Secret Key',
+                'Cole as chaves nos campos abaixo',
+                'Configure o Webhook URL'
             ]
         }
     };
@@ -442,6 +497,67 @@ export default function FinancePage() {
                             />
                             <p className={styles.inputHint}>
                                 Para validar webhooks (Developers → Webhooks → Signing secret)
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* SyncPay Fields */}
+                {gateway === 'syncpay' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
+                            <label>
+                                <Key size={16} />
+                                API Key *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="sua_api_key_syncpay..."
+                                value={credentials.syncpay_api_key}
+                                onChange={(e) => handleCredentialChange('syncpay_api_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Painel → Configurações → API Key
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* ParadisePag Fields */}
+                {gateway === 'paradisepag' && (
+                    <div className={styles.fieldsGrid}>
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Public Key *
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="pk_xxxxxxxxxxxx..."
+                                value={credentials.paradisepag_public_key}
+                                onChange={(e) => handleCredentialChange('paradisepag_public_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Chave pública do ParadisePag
+                            </p>
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label>
+                                <Key size={16} />
+                                Secret Key *
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="sk_xxxxxxxxxxxx..."
+                                value={credentials.paradisepag_secret_key}
+                                onChange={(e) => handleCredentialChange('paradisepag_secret_key', e.target.value)}
+                                className={styles.input}
+                            />
+                            <p className={styles.inputHint}>
+                                Chave secreta do ParadisePag
                             </p>
                         </div>
                     </div>
