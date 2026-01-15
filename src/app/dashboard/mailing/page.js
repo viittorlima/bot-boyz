@@ -13,6 +13,7 @@ export default function CreatorMailingPage() {
     const [loadingBots, setLoadingBots] = useState(true);
     const [sending, setSending] = useState(false);
     const [result, setResult] = useState({ type: '', text: '' });
+    const [hasGateway, setHasGateway] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -21,12 +22,14 @@ export default function CreatorMailingPage() {
         filter: 'all',
         message: '',
         media_url: '',
-        buttons: []
+        buttons: [],
+        isCheckout: false
     });
 
     // Button state
     const [buttonText, setButtonText] = useState('');
     const [buttonUrl, setButtonUrl] = useState('');
+    const [offerAmount, setOfferAmount] = useState('');
 
     useEffect(() => {
         loadBots();
@@ -46,6 +49,7 @@ export default function CreatorMailingPage() {
             const res = await api.get('/bots');
             if (res.data && res.data.bots) {
                 setBots(res.data.bots);
+                setHasGateway(res.data.hasGateway);
                 // Auto-select first bot if available
                 if (res.data.bots.length > 0) {
                     setFormData(prev => ({ ...prev, bot_id: res.data.bots[0].id }));
@@ -87,19 +91,39 @@ export default function CreatorMailingPage() {
             return;
         }
 
+        // Validate Checkout Mode
+        let finalButtons = [];
+        if (formData.isCheckout) {
+            if (!hasGateway) {
+                setResult({ type: 'error', text: 'Gateway de pagamento não configurado.' });
+                return;
+            }
+            if (!offerAmount || parseFloat(offerAmount) <= 0) {
+                setResult({ type: 'error', text: 'Digite um valor válido para a oferta.' });
+                return;
+            }
+            if (!buttonText) {
+                setResult({ type: 'error', text: 'Digite o texto do botão.' });
+                return;
+            }
+
+            // Generate Checkout URL
+            const checkoutUrl = `${window.location.origin}/checkout?bot_id=${formData.bot_id}&amount=${offerAmount}&desc=${encodeURIComponent(buttonText)}`;
+            finalButtons.push({ text: buttonText, url: checkoutUrl });
+        } else {
+            // Standard Button Mode
+            if (buttonText && buttonUrl) {
+                finalButtons.push({ text: buttonText, url: buttonUrl });
+            }
+        }
+
         setSending(true);
         setResult({ type: '', text: '' });
 
         try {
-            // Build buttons array
-            const buttons = [];
-            if (buttonText && buttonUrl) {
-                buttons.push({ text: buttonText, url: buttonUrl });
-            }
-
             const response = await api.post('/creator/broadcasts', {
                 ...formData,
-                buttons
+                buttons: finalButtons
             });
 
             setResult({
@@ -114,10 +138,12 @@ export default function CreatorMailingPage() {
                 filter: 'all',
                 message: '',
                 media_url: '',
-                buttons: []
+                buttons: [],
+                isCheckout: false
             }));
             setButtonText('');
             setButtonUrl('');
+            setOfferAmount('');
         } catch (error) {
             setResult({ type: 'error', text: error.response?.data?.error || 'Erro ao enviar broadcast.' });
         } finally {
@@ -270,10 +296,35 @@ export default function CreatorMailingPage() {
 
                 {/* Promo Button */}
                 <div className={styles.section}>
-                    <h3>Botão de Promoção (Opcional)</h3>
+                    <h3>Botão de Promoção / Checkout</h3>
                     <p className={styles.hint} style={{ marginBottom: 12 }}>
-                        Adicione um botão clicável que aparece abaixo da mensagem no Telegram
+                        Adicione um botão clicável abaixo da mensagem.
                     </p>
+
+                    {/* Button Type Selector */}
+                    <div className={styles.buttonTypeSelector} style={{ marginBottom: 16 }}>
+                        <div className={styles.row}>
+                            <label className={styles.radioLabel}>
+                                <input
+                                    type="radio"
+                                    name="btnType"
+                                    checked={!formData.isCheckout}
+                                    onChange={() => setFormData({ ...formData, isCheckout: false })}
+                                />
+                                Link Externo
+                            </label>
+                            <label className={styles.radioLabel}>
+                                <input
+                                    type="radio"
+                                    name="btnType"
+                                    checked={formData.isCheckout}
+                                    onChange={() => setFormData({ ...formData, isCheckout: true })}
+                                />
+                                Checkout / Oferta (Cobrança)
+                            </label>
+                        </div>
+                    </div>
+
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label>Texto do Botão</label>
@@ -281,21 +332,47 @@ export default function CreatorMailingPage() {
                                 type="text"
                                 value={buttonText}
                                 onChange={e => setButtonText(e.target.value)}
-                                placeholder="Ex: 🔥 Ver Oferta"
+                                placeholder={formData.isCheckout ? "Ex: 🚀 Comprar por R$ 29,90" : "Ex: 🔥 Ver Oferta"}
                                 className={styles.input}
                             />
                         </div>
-                        <div className={styles.field}>
-                            <label>Link do Botão</label>
-                            <input
-                                type="url"
-                                value={buttonUrl}
-                                onChange={e => setButtonUrl(e.target.value)}
-                                placeholder="https://..."
-                                className={styles.input}
-                            />
-                        </div>
+
+                        {formData.isCheckout ? (
+                            <div className={styles.field}>
+                                <label>Valor da Oferta (R$)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="1"
+                                    value={offerAmount}
+                                    onChange={e => setOfferAmount(e.target.value)}
+                                    placeholder="29.90"
+                                    className={styles.input}
+                                />
+                                <span className={styles.hint}>
+                                    O link de checkout será gerado automaticamente.
+                                </span>
+                            </div>
+                        ) : (
+                            <div className={styles.field}>
+                                <label>Link do Botão</label>
+                                <input
+                                    type="url"
+                                    value={buttonUrl}
+                                    onChange={e => setButtonUrl(e.target.value)}
+                                    placeholder="https://..."
+                                    className={styles.input}
+                                />
+                            </div>
+                        )}
                     </div>
+
+                    {formData.isCheckout && !hasGateway && (
+                        <div className={`${styles.result} ${styles.error}`} style={{ marginTop: 8 }}>
+                            <AlertCircle size={16} />
+                            Você precisa configurar um Gateway de Pagamento na aba Financeiro para usar o Checkout.
+                        </div>
+                    )}
                 </div>
 
                 {/* Preview */}

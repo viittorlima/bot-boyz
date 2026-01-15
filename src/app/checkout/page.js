@@ -22,6 +22,10 @@ function CheckoutContent() {
     const tgName = searchParams.get('tg_name');
     const tgUser = searchParams.get('tg_user');
 
+    const botId = searchParams.get('bot_id');
+    const amount = searchParams.get('amount');
+    const desc = searchParams.get('desc');
+
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [paymentMethod, setPaymentMethod] = useState('pix');
@@ -33,8 +37,20 @@ function CheckoutContent() {
     useEffect(() => {
         if (planId) {
             loadPlan();
+        } else if (botId && amount) {
+            // Virtual plan for offer
+            setPlan({
+                name: desc || 'Oferta Promocional',
+                price: amount,
+                duration_days: 0, // One-time usually
+                is_recurring: false
+            });
+            setLoading(false);
+        } else {
+            setError('Parâmetros inválidos');
+            setLoading(false);
         }
-    }, [planId]);
+    }, [planId, botId, amount]);
 
     useEffect(() => {
         // Poll for payment status when we have payment data
@@ -74,6 +90,9 @@ function CheckoutContent() {
         try {
             const response = await api.post('/checkout/create', {
                 planId,
+                botId,
+                amount,
+                description: desc,
                 paymentMethod,
                 telegramId: tgId,
                 telegramName: tgName,
