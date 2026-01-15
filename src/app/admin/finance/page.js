@@ -22,7 +22,14 @@ export default function AdminFinancePage() {
         mp_public_key: '',
         // Asaas
         asaas_api_key: '',
-        asaas_webhook_token: ''
+        asaas_webhook_token: '',
+        // SyncPay
+        syncpay_api_key: '',
+        syncpay_platform_recipient_id: '',
+        syncpay_default_recipient_id: '',
+        // ParadisePag
+        paradisepag_public_key: '',
+        paradisepag_secret_key: ''
     });
 
     useEffect(() => {
@@ -132,7 +139,7 @@ export default function AdminFinancePage() {
                     Escolha onde você quer receber sua parte das vendas (comissão via split)
                 </p>
 
-                <div className={styles.gatewayGrid}>
+                <div className={styles.gatewayGrid} style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                     {/* PushinPay - Recommended */}
                     <button
                         className={`${styles.gatewayCard} ${styles.recommended} ${settings.gateway === 'pushinpay' ? styles.active : ''}`}
@@ -146,7 +153,31 @@ export default function AdminFinancePage() {
                             <Shield size={24} />
                             <span>PushinPay</span>
                         </div>
-                        <p>PIX instantâneo. <strong>Sigiloso e privado</strong>. Sem burocracia.</p>
+                        <p>PIX instantâneo. <strong>Sigiloso e privado</strong>.</p>
+                    </button>
+
+                    {/* SyncPay */}
+                    <button
+                        className={`${styles.gatewayCard} ${settings.gateway === 'syncpay' ? styles.active : ''}`}
+                        onClick={() => setSettings({ ...settings, gateway: 'syncpay' })}
+                    >
+                        <div className={styles.gatewayHeader}>
+                            <Megaphone size={24} />
+                            <span>SyncPay</span>
+                        </div>
+                        <p>PIX Automático. Alta conversão.</p>
+                    </button>
+
+                    {/* ParadisePag */}
+                    <button
+                        className={`${styles.gatewayCard} ${settings.gateway === 'paradisepag' ? styles.active : ''}`}
+                        onClick={() => setSettings({ ...settings, gateway: 'paradisepag' })}
+                    >
+                        <div className={styles.gatewayHeader}>
+                            <DollarSign size={24} />
+                            <span>ParadisePag</span>
+                        </div>
+                        <p>Múltiplos meios. Flexível.</p>
                     </button>
 
                     <button
@@ -157,7 +188,7 @@ export default function AdminFinancePage() {
                             <CreditCard size={24} />
                             <span>Mercado Pago</span>
                         </div>
-                        <p>PIX, cartão. Saque para qualquer banco.</p>
+                        <p>PIX, cartão. Saque p/ banco.</p>
                     </button>
 
                     <button
@@ -168,7 +199,7 @@ export default function AdminFinancePage() {
                             <Wallet size={24} />
                             <span>Asaas</span>
                         </div>
-                        <p>PIX, boleto, cartão. Taxas a partir de 2,99%.</p>
+                        <p>PIX, boleto, cartão.</p>
                     </button>
                 </div>
             </div>
@@ -195,8 +226,7 @@ export default function AdminFinancePage() {
                         Credenciais PushinPay
                     </h2>
                     <p className={styles.sectionDesc}>
-                        Cadastre-se em <a href="https://app.pushinpay.com.br/#/register" target="_blank" rel="noopener noreferrer">app.pushinpay.com.br <ExternalLink size={12} /></a>
-                        → Acesse o painel → Gere seu Token de API
+                        Cadastre-se no PushinPay → Painel → Gere seu Token de API
                     </p>
 
                     <div className={styles.fieldsGrid}>
@@ -220,7 +250,102 @@ export default function AdminFinancePage() {
                                 {copied ? <Check size={16} /> : <Copy size={16} />}
                             </button>
                         </div>
-                        <span className={styles.hint}>Configurações → Webhook Customizado → Cole a URL acima</span>
+                    </div>
+                </div>
+            )}
+
+            {/* SyncPay Config */}
+            {settings.gateway === 'syncpay' && (
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle}>
+                        <Key size={20} />
+                        Credenciais SyncPay
+                    </h2>
+                    <p className={styles.sectionDesc}>
+                        Insira suas credenciais da SyncPay para receber os pagamentos via split.
+                    </p>
+
+                    <div className={styles.fieldsGrid}>
+                        <div className={`${styles.field} ${styles.fullWidth}`}>
+                            <label>Chave de API (API Key) *</label>
+                            <input
+                                type="password"
+                                placeholder="sync_..."
+                                value={settings.syncpay_api_key}
+                                onChange={(e) => setSettings({ ...settings, syncpay_api_key: e.target.value })}
+                            />
+                        </div>
+                        <div className={styles.field}>
+                            <label>ID do Recebedor da Plataforma *</label>
+                            <input
+                                type="text"
+                                placeholder="Plataforma ID"
+                                value={settings.syncpay_platform_recipient_id}
+                                onChange={(e) => setSettings({ ...settings, syncpay_platform_recipient_id: e.target.value })}
+                            />
+                            <span className={styles.hint}>ID da sua conta principal para receber o split (R$ 0,55)</span>
+                        </div>
+                        <div className={styles.field}>
+                            <label>ID do Recebedor Padrão</label>
+                            <input
+                                type="text"
+                                placeholder="Default ID"
+                                value={settings.syncpay_default_recipient_id}
+                                onChange={(e) => setSettings({ ...settings, syncpay_default_recipient_id: e.target.value })}
+                            />
+                            <span className={styles.hint}>Caso criador não tenha gateway configurado</span>
+                        </div>
+                    </div>
+
+                    <div className={styles.webhookSection}>
+                        <label>URL do Webhook (configure no SyncPay):</label>
+                        <div className={styles.webhookBox}>
+                            <input type="text" value={`${webhookUrl}/syncpay`} readOnly />
+                            <button onClick={() => copyWebhook(`${webhookUrl}/syncpay`)}>
+                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ParadisePag Config */}
+            {settings.gateway === 'paradisepag' && (
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle}>
+                        <Key size={20} />
+                        Credenciais ParadisePag
+                    </h2>
+
+                    <div className={styles.fieldsGrid}>
+                        <div className={styles.field}>
+                            <label>Chave Pública (Public Key) *</label>
+                            <input
+                                type="text"
+                                placeholder="pk_..."
+                                value={settings.paradisepag_public_key}
+                                onChange={(e) => setSettings({ ...settings, paradisepag_public_key: e.target.value })}
+                            />
+                        </div>
+                        <div className={styles.field}>
+                            <label>Chave Secreta (Secret Key) *</label>
+                            <input
+                                type="password"
+                                placeholder="sk_..."
+                                value={settings.paradisepag_secret_key}
+                                onChange={(e) => setSettings({ ...settings, paradisepag_secret_key: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={styles.webhookSection}>
+                        <label>URL do Webhook (configure no ParadisePag):</label>
+                        <div className={styles.webhookBox}>
+                            <input type="text" value={`${webhookUrl}/paradisepag`} readOnly />
+                            <button onClick={() => copyWebhook(`${webhookUrl}/paradisepag`)}>
+                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
