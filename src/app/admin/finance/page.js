@@ -75,10 +75,11 @@ export default function AdminFinancePage() {
         setShowSecrets(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
-    const PasswordInput = ({ value, onChange, placeholder, fieldName }) => (
+    // Helper to render password input with toggle
+    const PasswordInput = ({ value, onChange, placeholder, fieldName, showSecrets, toggleSecret }) => (
         <div className={styles.passwordWrapper}>
             <input
-                type={showsecrets[fieldName] ? "text" : "password"}
+                type={showSecrets[fieldName] ? "text" : "password"}
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
@@ -88,7 +89,7 @@ export default function AdminFinancePage() {
                 className={styles.eyeButton}
                 onClick={() => toggleSecret(fieldName)}
             >
-                {showsecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showSecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
         </div>
     );
@@ -262,6 +263,8 @@ export default function AdminFinancePage() {
                                 value={settings.pushinpay_api_token}
                                 onChange={(val) => setSettings({ ...settings, pushinpay_api_token: val })}
                                 fieldName="pushinpay_api_token"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                             <span className={styles.hint}>Painel → Configurações → Gerar Token de API</span>
                         </div>
@@ -298,6 +301,8 @@ export default function AdminFinancePage() {
                                 value={settings.syncpay_api_key}
                                 onChange={(val) => setSettings({ ...settings, syncpay_api_key: val })}
                                 fieldName="syncpay_api_key"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                         </div>
                         <div className={styles.field}>
@@ -359,6 +364,8 @@ export default function AdminFinancePage() {
                                 value={settings.paradisepag_secret_key}
                                 onChange={(val) => setSettings({ ...settings, paradisepag_secret_key: val })}
                                 fieldName="paradisepag_secret_key"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                         </div>
                     </div>
@@ -395,6 +402,8 @@ export default function AdminFinancePage() {
                                 value={settings.mp_access_token}
                                 onChange={(val) => setSettings({ ...settings, mp_access_token: val })}
                                 fieldName="mp_access_token"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                             <span className={styles.hint}>Token secreto para criar cobranças</span>
                         </div>
@@ -406,6 +415,8 @@ export default function AdminFinancePage() {
                                 value={settings.mp_public_key}
                                 onChange={(val) => setSettings({ ...settings, mp_public_key: val })}
                                 fieldName="mp_public_key"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                             <span className={styles.hint}>Chave pública para checkout</span>
                         </div>
@@ -444,6 +455,8 @@ export default function AdminFinancePage() {
                                 value={settings.asaas_api_key}
                                 onChange={(val) => setSettings({ ...settings, asaas_api_key: val })}
                                 fieldName="asaas_api_key"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                             <span className={styles.hint}>Gerar Chave de API → Copiar</span>
                         </div>
@@ -455,6 +468,8 @@ export default function AdminFinancePage() {
                                 value={settings.asaas_webhook_token}
                                 onChange={(val) => setSettings({ ...settings, asaas_webhook_token: val })}
                                 fieldName="asaas_webhook_token"
+                                showSecrets={showsecrets}
+                                toggleSecret={toggleSecret}
                             />
                             <span className={styles.hint}>Webhooks → Configurar → Token</span>
                         </div>
