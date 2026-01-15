@@ -144,7 +144,13 @@ export default function CreatorMailingPage() {
                     {loadingBots ? (
                         <p className={styles.loading}>Carregando bots...</p>
                     ) : bots.length === 0 ? (
-                        <p className={styles.loading}>Você não possui bots cadastrados.</p>
+                        <div className={styles.emptyBots}>
+                            <Bot size={32} />
+                            <p>Você ainda não possui bots cadastrados.</p>
+                            <a href="/dashboard/bots" className={styles.createBotBtn}>
+                                Criar meu primeiro Bot
+                            </a>
+                        </div>
                     ) : (
                         <div className={styles.botGrid}>
                             <button
