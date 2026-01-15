@@ -90,6 +90,20 @@ export function AuthProvider({ children }) {
         localStorage.setItem('boyzclub_user', JSON.stringify(updated));
     };
 
+    // Force refresh user data from API
+    const refreshUser = async () => {
+        try {
+            const response = await authAPI.me();
+            const userData = response.data.user;
+            setUser(userData);
+            localStorage.setItem('boyzclub_user', JSON.stringify(userData));
+            return userData;
+        } catch (error) {
+            console.error('[AuthContext] Refresh error:', error);
+            return null;
+        }
+    };
+
     // Check if user is authenticated
     const isAuthenticated = !!user;
 
@@ -105,7 +119,8 @@ export function AuthProvider({ children }) {
             logout,
             updateUser,
             isAuthenticated,
-            isAdmin
+            isAdmin,
+            refreshUser
         }}>
             {children}
         </AuthContext.Provider>

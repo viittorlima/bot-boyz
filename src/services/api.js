@@ -57,7 +57,7 @@ api.interceptors.response.use(
 export const authAPI = {
     login: (email, password) => api.post('/auth/login', { email, password }),
     register: (data) => api.post('/auth/register', data),
-    me: () => api.get('/auth/me'),
+    me: () => api.get('/auth/me', { headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'Expires': '0' } }),
     updateGateway: (gateway, apiToken) => api.put('/auth/gateway', { gateway, apiToken })
 };
 

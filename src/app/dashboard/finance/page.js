@@ -9,7 +9,7 @@ import TutorialCard from '@/components/ui/TutorialCard';
 import styles from './page.module.css';
 
 export default function FinancePage() {
-    const { user, updateUser } = useAuth();
+    const { user, updateUser, refreshUser } = useAuth();
     const { showToast } = useToast();
 
     const [gateway, setGateway] = useState('');
@@ -39,6 +39,11 @@ export default function FinancePage() {
     });
 
     useEffect(() => {
+        // Force refresh on mount to ensure we have latest tokens
+        refreshUser().then(userData => {
+            console.log('Refreshed User Data:', userData);
+        });
+
         console.log('FinancePage mounted. User:', user);
         console.log('Gateway Preference:', user?.gateway_preference);
         console.log('Gateway API Token:', user?.gateway_api_token);
