@@ -489,3 +489,33 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Password Toggle */
+.passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordWrapper input {
+    width: 100%;
+    padding-right: 40px !important;
+}
+
+.eyeButton {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 2;
+}
+
+.eyeButton:hover {
+    color: var(--text-main);
+}

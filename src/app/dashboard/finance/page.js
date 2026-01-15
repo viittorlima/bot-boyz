@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Wallet, Copy, Check, Loader2, AlertCircle, ExternalLink, Key, CreditCard, Building, Shield, Star } from 'lucide-react';
+import { Wallet, Copy, Check, Loader2, AlertCircle, ExternalLink, Key, CreditCard, Building, Shield, Star, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authAPI } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
@@ -15,6 +15,7 @@ export default function FinancePage() {
     const [gateway, setGateway] = useState('');
     const [saving, setSaving] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [showsecrets, setShowSecrets] = useState({});
 
     // Gateway credentials
     const [credentials, setCredentials] = useState({
@@ -38,14 +39,92 @@ export default function FinancePage() {
     });
 
     useEffect(() => {
+        console.log('FinancePage mounted. User:', user);
+        console.log('Gateway Preference:', user?.gateway_preference);
+        console.log('Gateway API Token:', user?.gateway_api_token);
+
         if (user) {
             setGateway(user.gateway_preference || 'pushinpay');
+
+            // Load existing credentials
+            if (user.gateway_api_token) {
+                console.log('Parsing gateway_api_token:', user.gateway_api_token);
+                try {
+                    let tokenData = user.gateway_api_token;
+
+                    // Try to parse if it looks like JSON
+                    if (typeof tokenData === 'string' && (tokenData.startsWith('{') || tokenData.startsWith('['))) {
+                        tokenData = JSON.parse(tokenData);
+                    }
+                    console.log('Parsed tokenData:', tokenData);
+
+                    // Map backend data to local state
+                    // If it's a simple string, it depends on the gateway preference (legacy support)
+                    if (typeof tokenData === 'string') {
+                        // Legacy handling or simple token gateways
+                        const pref = user.gateway_preference;
+                        if (pref === 'pushinpay') setCredentials(prev => ({ ...prev, pushinpay_api_token: tokenData }));
+                        if (pref === 'syncpay') setCredentials(prev => ({ ...prev, syncpay_api_key: tokenData }));
+                        // Add others if needed
+                    } else if (typeof tokenData === 'object') {
+                        // Structured data
+                        setCredentials(prev => ({
+                            ...prev,
+                            // PushinPay
+                            pushinpay_api_token: tokenData.api_token || prev.pushinpay_api_token,
+                            // Asaas
+                            asaas_api_key: tokenData.api_key || prev.asaas_api_key,
+                            asaas_webhook_token: tokenData.webhook_token || prev.asaas_webhook_token,
+                            // Mercado Pago
+                            mp_access_token: tokenData.access_token || prev.mp_access_token,
+                            mp_public_key: tokenData.public_key || prev.mp_public_key,
+                            // Stripe
+                            stripe_secret_key: tokenData.secret_key || prev.stripe_secret_key,
+                            stripe_publishable_key: tokenData.publishable_key || prev.stripe_publishable_key,
+                            stripe_webhook_secret: tokenData.webhook_secret || prev.stripe_webhook_secret,
+                            // SyncPay
+                            syncpay_api_key: tokenData.api_key || prev.syncpay_api_key,
+                            // ParadisePag
+                            paradisepag_public_key: tokenData.public_key || prev.paradisepag_public_key,
+                            paradisepag_secret_key: tokenData.secret_key || prev.paradisepag_secret_key
+                        }));
+                    }
+                } catch (e) {
+                    console.error("Error parsing gateway credentials:", e);
+                }
+            } else {
+                console.log('No gateway_api_token found in user object.');
+            }
         }
     }, [user]);
 
     const handleCredentialChange = (field, value) => {
         setCredentials(prev => ({ ...prev, [field]: value }));
     };
+
+    const toggleSecret = (field) => {
+        setShowSecrets(prev => ({ ...prev, [field]: !prev[field] }));
+    };
+
+    // Helper to render password input with toggle
+    const PasswordInput = ({ value, onChange, placeholder, fieldName }) => (
+        <div className={styles.passwordWrapper}>
+            <input
+                type={showsecrets[fieldName] ? "text" : "password"}
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className={styles.input}
+            />
+            <button
+                type="button"
+                className={styles.eyeButton}
+                onClick={() => toggleSecret(fieldName)}
+            >
+                {showsecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+        </div>
+    );
 
     const handleSave = async () => {
         let isValid = false;
@@ -117,21 +196,12 @@ export default function FinancePage() {
         setSaving(true);
         try {
             await authAPI.updateGateway(gateway, gatewayCredentials);
-            updateUser({ gateway_preference: gateway });
-            showToast('Gateway configurado com sucesso!', 'success');
-            setCredentials({
-                pushinpay_api_token: '',
-                asaas_api_key: '',
-                asaas_webhook_token: '',
-                mp_access_token: '',
-                mp_public_key: '',
-                stripe_secret_key: '',
-                stripe_publishable_key: '',
-                stripe_webhook_secret: '',
-                syncpay_api_key: '',
-                paradisepag_public_key: '',
-                paradisepag_secret_key: ''
+            // Update local user state immediately to reflect changes
+            updateUser({
+                gateway_preference: gateway,
+                gateway_api_token: JSON.stringify(gatewayCredentials) // Update locally as well
             });
+            showToast('Gateway configurado com sucesso!', 'success');
         } catch (error) {
             console.error('Error saving gateway:', error);
             showToast(
@@ -354,12 +424,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Token de API *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="seu_token_api_aqui"
                                 value={credentials.pushinpay_api_token}
-                                onChange={(e) => handleCredentialChange('pushinpay_api_token', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('pushinpay_api_token', val)}
+                                fieldName="pushinpay_api_token"
                             />
                             <p className={styles.inputHint}>
                                 Painel → Configurações → Gerar Token de API
@@ -376,12 +445,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Chave de API *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="$aact_YTU5YTE0M2M2YmU..."
                                 value={credentials.asaas_api_key}
-                                onChange={(e) => handleCredentialChange('asaas_api_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('asaas_api_key', val)}
+                                fieldName="asaas_api_key"
                             />
                             <p className={styles.inputHint}>
                                 Encontre em: Configurações → Integrações → Gerar Chave de API
@@ -393,12 +461,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Token do Webhook
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="Token para validar webhooks..."
                                 value={credentials.asaas_webhook_token}
-                                onChange={(e) => handleCredentialChange('asaas_webhook_token', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('asaas_webhook_token', val)}
+                                fieldName="asaas_webhook_token"
                             />
                             <p className={styles.inputHint}>
                                 Encontre em: Configurações → Integrações → Webhooks → Token de autenticação
@@ -415,12 +482,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Access Token *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="APP_USR-xxxxxxxx-xxxx..."
                                 value={credentials.mp_access_token}
-                                onChange={(e) => handleCredentialChange('mp_access_token', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('mp_access_token', val)}
+                                fieldName="mp_access_token"
                             />
                             <p className={styles.inputHint}>
                                 Token de acesso para criar cobranças (servidor)
@@ -432,12 +498,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Public Key *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="APP_USR-xxxxxxxx-xxxx..."
                                 value={credentials.mp_public_key}
-                                onChange={(e) => handleCredentialChange('mp_public_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('mp_public_key', val)}
+                                fieldName="mp_public_key"
                             />
                             <p className={styles.inputHint}>
                                 Chave pública para checkout (cliente)
@@ -454,12 +519,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Publishable Key *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="pk_live_xxxxxxxxxxxxxxxx..."
                                 value={credentials.stripe_publishable_key}
-                                onChange={(e) => handleCredentialChange('stripe_publishable_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('stripe_publishable_key', val)}
+                                fieldName="stripe_publishable_key"
                             />
                             <p className={styles.inputHint}>
                                 Chave pública para checkout (começa com pk_)
@@ -471,12 +535,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Secret Key *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="sk_live_xxxxxxxxxxxxxxxx..."
                                 value={credentials.stripe_secret_key}
-                                onChange={(e) => handleCredentialChange('stripe_secret_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('stripe_secret_key', val)}
+                                fieldName="stripe_secret_key"
                             />
                             <p className={styles.inputHint}>
                                 Chave secreta do servidor (começa com sk_)
@@ -488,12 +551,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Webhook Signing Secret
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="whsec_xxxxxxxxxxxxxxxx..."
                                 value={credentials.stripe_webhook_secret}
-                                onChange={(e) => handleCredentialChange('stripe_webhook_secret', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('stripe_webhook_secret', val)}
+                                fieldName="stripe_webhook_secret"
                             />
                             <p className={styles.inputHint}>
                                 Para validar webhooks (Developers → Webhooks → Signing secret)
@@ -510,12 +572,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 API Key *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="sua_api_key_syncpay..."
                                 value={credentials.syncpay_api_key}
-                                onChange={(e) => handleCredentialChange('syncpay_api_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('syncpay_api_key', val)}
+                                fieldName="syncpay_api_key"
                             />
                             <p className={styles.inputHint}>
                                 Painel → Configurações → API Key
@@ -532,12 +593,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Public Key *
                             </label>
-                            <input
-                                type="text"
+                            <PasswordInput
                                 placeholder="pk_xxxxxxxxxxxx..."
                                 value={credentials.paradisepag_public_key}
-                                onChange={(e) => handleCredentialChange('paradisepag_public_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('paradisepag_public_key', val)}
+                                fieldName="paradisepag_public_key"
                             />
                             <p className={styles.inputHint}>
                                 Chave pública do ParadisePag
@@ -549,12 +609,11 @@ export default function FinancePage() {
                                 <Key size={16} />
                                 Secret Key *
                             </label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="sk_xxxxxxxxxxxx..."
                                 value={credentials.paradisepag_secret_key}
-                                onChange={(e) => handleCredentialChange('paradisepag_secret_key', e.target.value)}
-                                className={styles.input}
+                                onChange={(val) => handleCredentialChange('paradisepag_secret_key', val)}
+                                fieldName="paradisepag_secret_key"
                             />
                             <p className={styles.inputHint}>
                                 Chave secreta do ParadisePag

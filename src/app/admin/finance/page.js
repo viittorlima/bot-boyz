@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
     CreditCard, Wallet, Key, Check, Loader2, AlertCircle,
-    ExternalLink, Copy, Building, Percent, DollarSign, Info, Shield, Star, Megaphone
+    ExternalLink, Copy, Building, Percent, DollarSign, Info, Shield, Star, Megaphone, Eye, EyeOff
 } from 'lucide-react';
 import api from '@/services/api';
 import styles from './page.module.css';
@@ -67,6 +67,31 @@ export default function AdminFinancePage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
+    const [showsecrets, setShowSecrets] = useState({});
+
+    // Helper to render password input with toggle
+    const toggleSecret = (field) => {
+        setShowSecrets(prev => ({ ...prev, [field]: !prev[field] }));
+    };
+
+    const PasswordInput = ({ value, onChange, placeholder, fieldName }) => (
+        <div className={styles.passwordWrapper}>
+            <input
+                type={showsecrets[fieldName] ? "text" : "password"}
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
+            <button
+                type="button"
+                className={styles.eyeButton}
+                onClick={() => toggleSecret(fieldName)}
+            >
+                {showsecrets[fieldName] ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+        </div>
+    );
 
     if (loading) {
         return (
@@ -232,11 +257,11 @@ export default function AdminFinancePage() {
                     <div className={styles.fieldsGrid}>
                         <div className={`${styles.field} ${styles.fullWidth}`}>
                             <label>Token de API *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="seu_token_api_aqui"
                                 value={settings.pushinpay_api_token}
-                                onChange={(e) => setSettings({ ...settings, pushinpay_api_token: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, pushinpay_api_token: val })}
+                                fieldName="pushinpay_api_token"
                             />
                             <span className={styles.hint}>Painel → Configurações → Gerar Token de API</span>
                         </div>
@@ -268,11 +293,11 @@ export default function AdminFinancePage() {
                     <div className={styles.fieldsGrid}>
                         <div className={`${styles.field} ${styles.fullWidth}`}>
                             <label>Chave de API (API Key) *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="sync_..."
                                 value={settings.syncpay_api_key}
-                                onChange={(e) => setSettings({ ...settings, syncpay_api_key: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, syncpay_api_key: val })}
+                                fieldName="syncpay_api_key"
                             />
                         </div>
                         <div className={styles.field}>
@@ -329,11 +354,11 @@ export default function AdminFinancePage() {
                         </div>
                         <div className={styles.field}>
                             <label>Chave Secreta (Secret Key) *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="sk_..."
                                 value={settings.paradisepag_secret_key}
-                                onChange={(e) => setSettings({ ...settings, paradisepag_secret_key: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, paradisepag_secret_key: val })}
+                                fieldName="paradisepag_secret_key"
                             />
                         </div>
                     </div>
@@ -365,22 +390,22 @@ export default function AdminFinancePage() {
                     <div className={styles.fieldsGrid}>
                         <div className={styles.field}>
                             <label>Access Token *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="APP_USR-xxxxxxxx-xxxx-xxxx..."
                                 value={settings.mp_access_token}
-                                onChange={(e) => setSettings({ ...settings, mp_access_token: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, mp_access_token: val })}
+                                fieldName="mp_access_token"
                             />
                             <span className={styles.hint}>Token secreto para criar cobranças</span>
                         </div>
 
                         <div className={styles.field}>
                             <label>Public Key *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="APP_USR-xxxxxxxx-xxxx-xxxx..."
                                 value={settings.mp_public_key}
-                                onChange={(e) => setSettings({ ...settings, mp_public_key: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, mp_public_key: val })}
+                                fieldName="mp_public_key"
                             />
                             <span className={styles.hint}>Chave pública para checkout</span>
                         </div>
@@ -414,22 +439,22 @@ export default function AdminFinancePage() {
                     <div className={styles.fieldsGrid}>
                         <div className={styles.field}>
                             <label>Chave de API *</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="$aact_YTU5YTE0M2M2YmU..."
                                 value={settings.asaas_api_key}
-                                onChange={(e) => setSettings({ ...settings, asaas_api_key: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, asaas_api_key: val })}
+                                fieldName="asaas_api_key"
                             />
                             <span className={styles.hint}>Gerar Chave de API → Copiar</span>
                         </div>
 
                         <div className={styles.field}>
                             <label>Token do Webhook</label>
-                            <input
-                                type="password"
+                            <PasswordInput
                                 placeholder="Token de autenticação..."
                                 value={settings.asaas_webhook_token}
-                                onChange={(e) => setSettings({ ...settings, asaas_webhook_token: e.target.value })}
+                                onChange={(val) => setSettings({ ...settings, asaas_webhook_token: val })}
+                                fieldName="asaas_webhook_token"
                             />
                             <span className={styles.hint}>Webhooks → Configurar → Token</span>
                         </div>

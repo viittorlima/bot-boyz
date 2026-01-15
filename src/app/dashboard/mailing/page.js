@@ -14,6 +14,7 @@ export default function CreatorMailingPage() {
     const [sending, setSending] = useState(false);
     const [result, setResult] = useState({ type: '', text: '' });
     const [hasGateway, setHasGateway] = useState(false);
+    const [gatewayName, setGatewayName] = useState('');
 
     // Form State
     const [formData, setFormData] = useState({
@@ -50,6 +51,7 @@ export default function CreatorMailingPage() {
             if (res.data && res.data.bots) {
                 setBots(res.data.bots);
                 setHasGateway(res.data.hasGateway);
+                setGatewayName(res.data.gatewayName);
                 // Auto-select first bot if available
                 if (res.data.bots.length > 0) {
                     setFormData(prev => ({ ...prev, bot_id: res.data.bots[0].id }));
@@ -367,10 +369,24 @@ export default function CreatorMailingPage() {
                         )}
                     </div>
 
-                    {formData.isCheckout && !hasGateway && (
-                        <div className={`${styles.result} ${styles.error}`} style={{ marginTop: 8 }}>
-                            <AlertCircle size={16} />
-                            Você precisa configurar um Gateway de Pagamento na aba Financeiro para usar o Checkout.
+                    {/* Gateway Info */}
+                    {formData.isCheckout && (
+                        <div className={styles.gatewayInfo} style={{ marginTop: 12 }}>
+                            {hasGateway ? (
+                                <div className={`${styles.result} ${styles.success}`} style={{ marginBottom: 0, padding: '10px 14px' }}>
+                                    <CheckCircle size={16} />
+                                    <span>
+                                        Recebendo pagamentos via: <strong>{gatewayName}</strong>
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={`${styles.result} ${styles.error}`} style={{ marginBottom: 0 }}>
+                                    <AlertCircle size={16} />
+                                    <span>
+                                        <strong>Atenção:</strong> Você precisa configurar um Gateway de Pagamento na aba <a href="/dashboard/finance" style={{ textDecoration: 'underline', color: 'inherit' }}>Financeiro</a> para receber.
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
