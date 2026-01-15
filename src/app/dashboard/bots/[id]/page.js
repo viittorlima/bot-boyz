@@ -44,7 +44,8 @@ export default function BotEditPage({ params }) {
         name: '',
         welcome_message: '',
         request_media_on_start: false,
-        channel_id: ''
+        channel_id: '',
+        anti_cloning: true
     });
 
     const [newPlan, setNewPlan] = useState({
@@ -69,7 +70,8 @@ export default function BotEditPage({ params }) {
                 name: botData.name || '',
                 welcome_message: botData.welcome_message || '',
                 request_media_on_start: botData.request_media_on_start || false,
-                channel_id: botData.channel_id || ''
+                channel_id: botData.channel_id || '',
+                anti_cloning: botData.anti_cloning ?? true
             });
         } catch (error) {
             console.error('Error loading bot:', error);
@@ -247,6 +249,25 @@ export default function BotEditPage({ params }) {
                                 'Cole aqui no campo acima'
                             ]}
                         />
+
+                        <div className={styles.checkboxGroup} style={{ marginTop: 24, padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
+                            <div className={styles.checkboxInfo}>
+                                <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
+                                    Proteção Anti-Clonagem
+                                </h3>
+                                <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                                    Criptografa e protege o conteúdo (texto, fotos, vídeos) impedindo encaminhamento e salvamento.
+                                </p>
+                            </div>
+                            <label className={styles.switch}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.anti_cloning}
+                                    onChange={(e) => setFormData({ ...formData, anti_cloning: e.target.checked })}
+                                />
+                                <span className={styles.slider}></span>
+                            </label>
+                        </div>
                     </div>
 
                     {/* Public Link */}

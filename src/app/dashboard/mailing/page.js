@@ -375,26 +375,60 @@ export default function CreatorMailingPage() {
                     )}
                 </div>
 
-                {/* Preview */}
+                {/* Telegram Preview */}
                 {(formData.message || formData.media_url) && (
-                    <div className={styles.preview}>
-                        <h4>Preview</h4>
-                        <div className={styles.previewBox}>
-                            {formData.media_url && formData.type === 'photo' && (
-                                <img src={formData.media_url} alt="Preview" className={styles.previewImage} />
-                            )}
-                            {formData.media_url && formData.type === 'video' && (
-                                <video src={formData.media_url} controls className={styles.previewVideo} />
-                            )}
-                            {formData.message && (
-                                <p className={styles.previewText}>{formData.message}</p>
-                            )}
-                            {buttonText && buttonUrl && (
-                                <div className={styles.previewButton}>
-                                    <ExternalLink size={14} />
-                                    {buttonText}
+                    <div className={styles.section}>
+                        <h3>Preview (Telegram)</h3>
+                        <div className={styles.preview}>
+                            {/* Header */}
+                            <div className={styles.telegramHeader}>
+                                <div className={styles.telegramAvatar}>
+                                    {selectedBot?.name?.[0] || 'B'}
                                 </div>
-                            )}
+                                <div className={styles.telegramInfo}>
+                                    <span className={styles.telegramName}>{selectedBot?.name || 'Bot VIP'}</span>
+                                    <span className={styles.telegramStatus}>bot</span>
+                                </div>
+                            </div>
+
+                            {/* Body */}
+                            <div className={styles.telegramBody}>
+                                <div className={styles.telegramDate}>Hoje</div>
+
+                                {/* Message Bubble */}
+                                <div className={styles.telegramBubble}>
+                                    {/* Media */}
+                                    {formData.media_url && (
+                                        <div className={styles.telegramMedia}>
+                                            {formData.type === 'photo' ? (
+                                                <img src={formData.media_url} alt="Media" />
+                                            ) : (
+                                                <video src={formData.media_url} controls />
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Text */}
+                                    {formData.message && (
+                                        <div className={styles.telegramContent}>
+                                            {formData.message}
+                                            <span className={styles.telegramMeta}>
+                                                {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Inline Buttons */}
+                                {buttonText && (
+                                    <div className={styles.telegramButtons}>
+                                        <div className={styles.telegramButton}>
+                                            {buttonText}
+                                            <ExternalLink size={12} style={{ opacity: 0.7 }} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}

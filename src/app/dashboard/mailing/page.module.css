@@ -214,65 +214,152 @@
     gap: 12px;
 }
 
-/* Preview */
+/* Telegram Preview */
 .preview {
-    background: var(--surface-primary);
+    background: #0e0e0e;
     border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.preview h4 {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-subtle);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-}
-
-.previewBox {
-    background: var(--surface-secondary);
-    border-radius: 10px;
-    padding: 16px;
-}
-
-.previewImage {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    object-fit: cover;
-}
-
-.previewVideo {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.previewText {
-    white-space: pre-wrap;
-    font-size: 14px;
-    color: var(--text-main);
-    line-height: 1.5;
-}
-
-.previewButton {
-    display: inline-flex;
+.telegramHeader {
+    background: #212121;
+    padding: 10px 16px;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 12px;
-    padding: 8px 16px;
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #60a5fa;
+    gap: 12px;
+    border-bottom: 1px solid #000;
 }
+
+.telegramAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.telegramInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.telegramName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.telegramStatus {
+    font-size: 12px;
+    color: #888;
+}
+
+.telegramBody {
+    background-color: #0e0e0e;
+    background-image: url("https://web.telegram.org/img/bg_0.png");
+    /* Optional pattern */
+    background-size: cover;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 200px;
+}
+
+.telegramDate {
+    align-self: center;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.telegramBubble {
+    background: #212121;
+    border-radius: 12px 12px 12px 0;
+    padding: 6px;
+    max-width: 85%;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.telegramMedia {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.telegramMedia img,
+.telegramMedia video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.telegramContent {
+    padding: 4px 8px;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.telegramMeta {
+    float: right;
+    margin-left: 8px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Inline Buttons */
+.telegramButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    max-width: 85%;
+}
+
+.telegramButton {
+    background: #2e343d;
+    /* Button color */
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 
 /* Result Message */
 .result {
