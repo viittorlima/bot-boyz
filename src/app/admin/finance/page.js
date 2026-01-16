@@ -33,15 +33,7 @@ export default function AdminFinancePage() {
     const [copied, setCopied] = useState(false);
     const [settings, setSettings] = useState({
         platformFee: 10,
-        gateway: 'pushinpay',
-        // PushinPay
-        pushinpay_api_token: '',
-        // Mercado Pago
-        mp_access_token: '',
-        mp_public_key: '',
-        // Asaas
-        asaas_api_key: '',
-        asaas_webhook_token: '',
+        gateway: 'syncpay',
         // SyncPay
         syncpay_api_key: '',
         syncpay_platform_recipient_id: '',
@@ -168,22 +160,6 @@ export default function AdminFinancePage() {
                 </p>
 
                 <div className={styles.gatewayGrid} style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-                    {/* PushinPay - Recommended */}
-                    <button
-                        className={`${styles.gatewayCard} ${styles.recommended} ${settings.gateway === 'pushinpay' ? styles.active : ''}`}
-                        onClick={() => setSettings({ ...settings, gateway: 'pushinpay' })}
-                    >
-                        <div className={styles.recommendedBadge}>
-                            <Star size={12} />
-                            Recomendado
-                        </div>
-                        <div className={styles.gatewayHeader}>
-                            <Shield size={24} />
-                            <span>PushinPay</span>
-                        </div>
-                        <p>PIX instantâneo. <strong>Sigiloso e privado</strong>.</p>
-                    </button>
-
                     {/* SyncPay */}
                     <button
                         className={`${styles.gatewayCard} ${settings.gateway === 'syncpay' ? styles.active : ''}`}
@@ -207,82 +183,8 @@ export default function AdminFinancePage() {
                         </div>
                         <p>Múltiplos meios. Flexível.</p>
                     </button>
-
-                    <button
-                        className={`${styles.gatewayCard} ${settings.gateway === 'mercadopago' ? styles.active : ''}`}
-                        onClick={() => setSettings({ ...settings, gateway: 'mercadopago' })}
-                    >
-                        <div className={styles.gatewayHeader}>
-                            <CreditCard size={24} />
-                            <span>Mercado Pago</span>
-                        </div>
-                        <p>PIX, cartão. Saque p/ banco.</p>
-                    </button>
-
-                    <button
-                        className={`${styles.gatewayCard} ${settings.gateway === 'asaas' ? styles.active : ''}`}
-                        onClick={() => setSettings({ ...settings, gateway: 'asaas' })}
-                    >
-                        <div className={styles.gatewayHeader}>
-                            <Wallet size={24} />
-                            <span>Asaas</span>
-                        </div>
-                        <p>PIX, boleto, cartão.</p>
-                    </button>
                 </div>
             </div>
-
-            {/* PushinPay Config */}
-            {settings.gateway === 'pushinpay' && (
-                <div className={styles.section}>
-                    <div className={styles.securityHighlight}>
-                        <Shield size={20} />
-                        <div>
-                            <h3>Por que escolher PushinPay?</h3>
-                            <ul>
-                                <li><strong>100% Sigiloso</strong> - Não exige dados pessoais extensos</li>
-                                <li><strong>Privacidade Total</strong> - Transações discretas e seguras</li>
-                                <li><strong>Sem Burocracia</strong> - Cadastro rápido e simples</li>
-                                <li><strong>PIX Instantâneo</strong> - Receba em segundos na sua conta</li>
-                                <li><strong>Split Automático</strong> - Divisão automática de valores</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <h2 className={styles.sectionTitle}>
-                        <Key size={20} />
-                        Credenciais PushinPay
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Cadastre-se no PushinPay → Painel → Gere seu Token de API
-                    </p>
-
-                    <div className={styles.fieldsGrid}>
-                        <div className={`${styles.field} ${styles.fullWidth}`}>
-                            <label>Token de API *</label>
-                            <PasswordInput
-                                placeholder="seu_token_api_aqui"
-                                value={settings.pushinpay_api_token}
-                                onChange={(val) => setSettings({ ...settings, pushinpay_api_token: val })}
-                                fieldName="pushinpay_api_token"
-                                showSecrets={showsecrets}
-                                toggleSecret={toggleSecret}
-                            />
-                            <span className={styles.hint}>Painel → Configurações → Gerar Token de API</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.webhookSection}>
-                        <label>URL do Webhook (configure no PushinPay):</label>
-                        <div className={styles.webhookBox}>
-                            <input type="text" value={`${webhookUrl}/pushinpay`} readOnly />
-                            <button onClick={() => copyWebhook(`${webhookUrl}/pushinpay`)}>
-                                {copied ? <Check size={16} /> : <Copy size={16} />}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* SyncPay Config */}
             {settings.gateway === 'syncpay' && (
@@ -380,112 +282,6 @@ export default function AdminFinancePage() {
                                 {copied ? <Check size={16} /> : <Copy size={16} />}
                             </button>
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Mercado Pago Config */}
-            {settings.gateway === 'mercadopago' && (
-                <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        <Key size={20} />
-                        Credenciais Mercado Pago
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Acesse <a href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" rel="noopener noreferrer">mercadopago.com.br/developers <ExternalLink size={12} /></a>
-                        → Suas integrações → Credenciais de produção
-                    </p>
-
-                    <div className={styles.fieldsGrid}>
-                        <div className={styles.field}>
-                            <label>Access Token *</label>
-                            <PasswordInput
-                                placeholder="APP_USR-xxxxxxxx-xxxx-xxxx..."
-                                value={settings.mp_access_token}
-                                onChange={(val) => setSettings({ ...settings, mp_access_token: val })}
-                                fieldName="mp_access_token"
-                                showSecrets={showsecrets}
-                                toggleSecret={toggleSecret}
-                            />
-                            <span className={styles.hint}>Token secreto para criar cobranças</span>
-                        </div>
-
-                        <div className={styles.field}>
-                            <label>Public Key *</label>
-                            <PasswordInput
-                                placeholder="APP_USR-xxxxxxxx-xxxx-xxxx..."
-                                value={settings.mp_public_key}
-                                onChange={(val) => setSettings({ ...settings, mp_public_key: val })}
-                                fieldName="mp_public_key"
-                                showSecrets={showsecrets}
-                                toggleSecret={toggleSecret}
-                            />
-                            <span className={styles.hint}>Chave pública para checkout</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.webhookSection}>
-                        <label>URL do Webhook (configure no Mercado Pago):</label>
-                        <div className={styles.webhookBox}>
-                            <input type="text" value={`${webhookUrl}/mercadopago`} readOnly />
-                            <button onClick={() => copyWebhook(`${webhookUrl}/mercadopago`)}>
-                                {copied ? <Check size={16} /> : <Copy size={16} />}
-                            </button>
-                        </div>
-                        <span className={styles.hint}>Configurações → Webhooks → Adicionar URL</span>
-                    </div>
-                </div>
-            )}
-
-            {/* Asaas Config */}
-            {settings.gateway === 'asaas' && (
-                <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        <Key size={20} />
-                        Credenciais Asaas
-                    </h2>
-                    <p className={styles.sectionDesc}>
-                        Acesse <a href="https://app.asaas.com" target="_blank" rel="noopener noreferrer">app.asaas.com <ExternalLink size={12} /></a>
-                        → Configurações → Integrações
-                    </p>
-
-                    <div className={styles.fieldsGrid}>
-                        <div className={styles.field}>
-                            <label>Chave de API *</label>
-                            <PasswordInput
-                                placeholder="$aact_YTU5YTE0M2M2YmU..."
-                                value={settings.asaas_api_key}
-                                onChange={(val) => setSettings({ ...settings, asaas_api_key: val })}
-                                fieldName="asaas_api_key"
-                                showSecrets={showsecrets}
-                                toggleSecret={toggleSecret}
-                            />
-                            <span className={styles.hint}>Gerar Chave de API → Copiar</span>
-                        </div>
-
-                        <div className={styles.field}>
-                            <label>Token do Webhook</label>
-                            <PasswordInput
-                                placeholder="Token de autenticação..."
-                                value={settings.asaas_webhook_token}
-                                onChange={(val) => setSettings({ ...settings, asaas_webhook_token: val })}
-                                fieldName="asaas_webhook_token"
-                                showSecrets={showsecrets}
-                                toggleSecret={toggleSecret}
-                            />
-                            <span className={styles.hint}>Webhooks → Configurar → Token</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.webhookSection}>
-                        <label>URL do Webhook (configure no Asaas):</label>
-                        <div className={styles.webhookBox}>
-                            <input type="text" value={`${webhookUrl}/asaas`} readOnly />
-                            <button onClick={() => copyWebhook(`${webhookUrl}/asaas`)}>
-                                {copied ? <Check size={16} /> : <Copy size={16} />}
-                            </button>
-                        </div>
-                        <span className={styles.hint}>Integrações → Webhooks → Adicionar URL</span>
                     </div>
                 </div>
             )}
