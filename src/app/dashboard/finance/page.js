@@ -228,71 +228,15 @@ export default function FinancePage() {
     };
 
     const gatewayInfo = {
-        pushinpay: {
-            name: 'PushinPay',
-            description: '100% sigiloso e privado. Sem burocracia. Ideal para conteúdo adulto.',
-            paymentMethods: ['PIX'],
-            badge: '🔒 Somente PIX',
-            link: 'https://app.pushinpay.com.br/#/register',
-            recommended: true,
-            tutorial: [
-                'Cadastre-se em app.pushinpay.com.br',
-                'Faça login e acesse o Painel',
-                'Vá em Configurações → Gerar Token de API',
-                'Copie o token gerado e cole abaixo',
-                'Configure o Webhook URL nas configurações do PushinPay'
-            ]
-        },
-        asaas: {
-            name: 'Asaas',
-            description: 'Gateway brasileiro completo. Taxa a partir de 2,99%. Saque rápido.',
-            paymentMethods: ['PIX', 'Boleto', 'Cartão de Crédito'],
-            badge: '💳 PIX + Cartão + Boleto',
-            link: 'https://www.asaas.com',
-            tutorial: [
-                'Acesse app.asaas.com e faça login ou crie sua conta',
-                'Vá em Configurações → Integrações',
-                'Clique em "Gerar Chave de API"',
-                'Copie a chave que começa com $aact_',
-                'Cole a chave abaixo e configure o Webhook URL no Asaas'
-            ]
-        },
-        mercadopago: {
-            name: 'Mercado Pago',
-            description: 'Gateway popular. PIX instantâneo e cartão em até 18x.',
-            paymentMethods: ['PIX', 'Cartão de Crédito', 'Cartão de Débito'],
-            badge: '💳 PIX + Cartão (18x)',
-            link: 'https://www.mercadopago.com.br/developers',
-            tutorial: [
-                'Acesse mercadopago.com.br/developers e faça login',
-                'Vá em "Suas Integrações" → "Criar aplicação"',
-                'Marque "Pagamentos online" e crie a aplicação',
-                'Em "Credenciais de produção", copie o Access Token e Public Key',
-                'Cole ambas as chaves abaixo e configure o Webhook URL'
-            ]
-        },
-        stripe: {
-            name: 'Stripe',
-            description: 'Gateway internacional. Aceita cartões de todo o mundo.',
-            paymentMethods: ['Cartão Internacional', 'Apple Pay', 'Google Pay'],
-            badge: '🌎 Cartões Internacionais',
-            link: 'https://dashboard.stripe.com',
-            tutorial: [
-                'Acesse dashboard.stripe.com e faça login',
-                'Vá em Developers → API Keys',
-                'Copie a Publishable key (pk_live_...) e Secret key (sk_live_...)',
-                'Vá em Developers → Webhooks e adicione o endpoint',
-                'Copie o Webhook Signing Secret (whsec_...)'
-            ]
-        },
         syncpay: {
             name: 'SyncPay',
             description: 'Gateway brasileiro com PIX instantâneo. Taxa competitiva.',
             paymentMethods: ['PIX'],
             badge: '⚡ PIX Rápido',
             link: 'https://syncpay.com.br',
+            recommended: true,
             tutorial: [
-                'Crie sua conta no SyncPay',
+                'Crie sua conta no SyncPay (https://syncpay.com.br)',
                 'Acesse o painel e vá em Configurações',
                 'Gere uma nova API Key',
                 'Copie a API Key e cole abaixo',
@@ -306,7 +250,7 @@ export default function FinancePage() {
             badge: '🌴 PIX + Cartão',
             link: 'https://paradisepag.com',
             tutorial: [
-                'Crie sua conta no ParadisePag',
+                'Crie sua conta no ParadisePag (https://paradisepag.com)',
                 'Acesse o painel e vá em API',
                 'Copie a Public Key e Secret Key',
                 'Cole as chaves nos campos abaixo',
@@ -398,176 +342,6 @@ export default function FinancePage() {
                     <Key size={20} />
                     Configurar {gatewayInfo[gateway]?.name}
                 </h2>
-
-                {/* PushinPay Security Highlight */}
-                {gateway === 'pushinpay' && (
-                    <div className={styles.securityHighlight}>
-                        <Shield size={20} />
-                        <div>
-                            <h3>Por que escolher PushinPay?</h3>
-                            <ul>
-                                <li><strong>100% Sigiloso</strong> - Não exige dados pessoais extensos</li>
-                                <li><strong>Privacidade Total</strong> - Transações discretas e seguras</li>
-                                <li><strong>Sem Burocracia</strong> - Cadastro rápido e simples</li>
-                                <li><strong>PIX Instantâneo</strong> - Receba em segundos na sua conta</li>
-                            </ul>
-                        </div>
-                    </div>
-                )}
-
-                <TutorialCard
-                    title={`Como configurar ${gatewayInfo[gateway]?.name}`}
-                    steps={gatewayInfo[gateway]?.tutorial || []}
-                    defaultOpen={true}
-                />
-
-                {/* PushinPay Fields */}
-                {gateway === 'pushinpay' && (
-                    <div className={styles.fieldsGrid}>
-                        <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
-                            <label>
-                                <Key size={16} />
-                                Token de API *
-                            </label>
-                            <PasswordInput
-                                placeholder="seu_token_api_aqui"
-                                value={credentials.pushinpay_api_token}
-                                onChange={(val) => handleCredentialChange('pushinpay_api_token', val)}
-                                fieldName="pushinpay_api_token"
-                            />
-                            <p className={styles.inputHint}>
-                                Painel → Configurações → Gerar Token de API
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Asaas Fields */}
-                {gateway === 'asaas' && (
-                    <div className={styles.fieldsGrid}>
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Chave de API *
-                            </label>
-                            <PasswordInput
-                                placeholder="$aact_YTU5YTE0M2M2YmU..."
-                                value={credentials.asaas_api_key}
-                                onChange={(val) => handleCredentialChange('asaas_api_key', val)}
-                                fieldName="asaas_api_key"
-                            />
-                            <p className={styles.inputHint}>
-                                Encontre em: Configurações → Integrações → Gerar Chave de API
-                            </p>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Token do Webhook
-                            </label>
-                            <PasswordInput
-                                placeholder="Token para validar webhooks..."
-                                value={credentials.asaas_webhook_token}
-                                onChange={(val) => handleCredentialChange('asaas_webhook_token', val)}
-                                fieldName="asaas_webhook_token"
-                            />
-                            <p className={styles.inputHint}>
-                                Encontre em: Configurações → Integrações → Webhooks → Token de autenticação
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Mercado Pago Fields */}
-                {gateway === 'mercadopago' && (
-                    <div className={styles.fieldsGrid}>
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Access Token *
-                            </label>
-                            <PasswordInput
-                                placeholder="APP_USR-xxxxxxxx-xxxx..."
-                                value={credentials.mp_access_token}
-                                onChange={(val) => handleCredentialChange('mp_access_token', val)}
-                                fieldName="mp_access_token"
-                            />
-                            <p className={styles.inputHint}>
-                                Token de acesso para criar cobranças (servidor)
-                            </p>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Public Key *
-                            </label>
-                            <PasswordInput
-                                placeholder="APP_USR-xxxxxxxx-xxxx..."
-                                value={credentials.mp_public_key}
-                                onChange={(val) => handleCredentialChange('mp_public_key', val)}
-                                fieldName="mp_public_key"
-                            />
-                            <p className={styles.inputHint}>
-                                Chave pública para checkout (cliente)
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Stripe Fields */}
-                {gateway === 'stripe' && (
-                    <div className={styles.fieldsGrid}>
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Publishable Key *
-                            </label>
-                            <PasswordInput
-                                placeholder="pk_live_xxxxxxxxxxxxxxxx..."
-                                value={credentials.stripe_publishable_key}
-                                onChange={(val) => handleCredentialChange('stripe_publishable_key', val)}
-                                fieldName="stripe_publishable_key"
-                            />
-                            <p className={styles.inputHint}>
-                                Chave pública para checkout (começa com pk_)
-                            </p>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Secret Key *
-                            </label>
-                            <PasswordInput
-                                placeholder="sk_live_xxxxxxxxxxxxxxxx..."
-                                value={credentials.stripe_secret_key}
-                                onChange={(val) => handleCredentialChange('stripe_secret_key', val)}
-                                fieldName="stripe_secret_key"
-                            />
-                            <p className={styles.inputHint}>
-                                Chave secreta do servidor (começa com sk_)
-                            </p>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label>
-                                <Key size={16} />
-                                Webhook Signing Secret
-                            </label>
-                            <PasswordInput
-                                placeholder="whsec_xxxxxxxxxxxxxxxx..."
-                                value={credentials.stripe_webhook_secret}
-                                onChange={(val) => handleCredentialChange('stripe_webhook_secret', val)}
-                                fieldName="stripe_webhook_secret"
-                            />
-                            <p className={styles.inputHint}>
-                                Para validar webhooks (Developers → Webhooks → Signing secret)
-                            </p>
-                        </div>
-                    </div>
-                )}
 
                 {/* SyncPay Fields */}
                 {gateway === 'syncpay' && (

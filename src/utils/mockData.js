@@ -131,7 +131,7 @@ export const sales = [
 
 // Gateway configuration
 export const gatewayConfig = {
-    provider: 'asaas',
+    provider: 'syncpay',
     apiToken: '',
     isConfigured: false,
     webhookUrl: 'https://api.boyzclub.com/webhooks/user_123'

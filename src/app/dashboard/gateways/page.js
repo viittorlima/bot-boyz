@@ -46,59 +46,23 @@ export default function GatewaysPage() {
                                 onChange={(e) => setConfig({ ...config, provider: e.target.value })}
                                 className={styles.select}
                             >
-                                <option value="asaas">Asaas</option>
-                                <option value="mercadopago">Mercado Pago</option>
-                                <option value="stripe">Stripe</option>
+                                <option value="syncpay">SyncPay</option>
+                                <option value="paradisepag">ParadisePag</option>
                             </select>
                         </div>
 
                         <div className={styles.inputGroup}>
-                            <label className={styles.label}>Token de API (Produção)</label>
+                            <label className={styles.label}>API Key / Token</label>
                             <input
                                 type="password"
                                 value={config.apiToken}
                                 onChange={(e) => setConfig({ ...config, apiToken: e.target.value })}
-                                placeholder="Insira seu token de produção"
+                                placeholder="Insira sua chave de API"
                                 className={styles.input}
                             />
                             <span className={styles.helper}>
-                                Encontre seu token no painel do provedor
+                                Encontre sua chave no painel do provedor
                             </span>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label className={styles.label}>Taxa de Comissão Global (%)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                max="100"
-                                value={config.commissionPercent}
-                                onChange={(e) => setConfig({ ...config, commissionPercent: parseInt(e.target.value) || 0 })}
-                                className={styles.input}
-                            />
-                            <span className={styles.helper}>
-                                Porcentagem que a plataforma retém de cada venda
-                            </span>
-                        </div>
-
-                        <div className={styles.inputGroup}>
-                            <label className={styles.label}>Ambiente</label>
-                            <div className={styles.toggleGroup}>
-                                <button
-                                    type="button"
-                                    className={`${styles.toggleButton} ${!config.isProduction ? styles.active : ''}`}
-                                    onClick={() => setConfig({ ...config, isProduction: false })}
-                                >
-                                    Sandbox
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`${styles.toggleButton} ${config.isProduction ? styles.active : ''}`}
-                                    onClick={() => setConfig({ ...config, isProduction: true })}
-                                >
-                                    Produção
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>

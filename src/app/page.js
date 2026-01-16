@@ -62,10 +62,10 @@ export default function LandingPage() {
       title: 'Integrando Pagamentos',
       subtitle: 'Configure PIX e cartão de crédito',
       steps: [
-        { title: 'Crie sua conta na Asaas', desc: 'Acesse asaas.com.br e crie sua conta gratuita. Complete o cadastro com seus dados.' },
-        { title: 'Verifique sua conta', desc: 'Envie os documentos solicitados para verificação. O processo leva de 1 a 3 dias úteis.' },
-        { title: 'Gere sua API Key', desc: 'No painel Asaas, vá em "Minha Conta" > "API" e gere uma nova chave de integração.' },
-        { title: 'Configure na Boyz Vip', desc: 'No painel Boyz Vip, vá em "Financeiro" e cole sua API Key da Asaas.' },
+        { title: 'Crie sua conta na SyncPay', desc: 'Acesse syncpay.com.br e crie sua conta gratuita. Complete o cadastro com seus dados.' },
+        { title: 'Verifique sua conta', desc: 'Envie os documentos solicitados para verificação. O processo é rápido e 100% digital.' },
+        { title: 'Gere sua API Key', desc: 'No painel SyncPay, vá em "Configurações" > "API" e gere uma nova chave de integração.' },
+        { title: 'Configure na Boyz Vip', desc: 'No painel Boyz Vip, vá em "Financeiro" e cole sua API Key da SyncPay.' },
         { title: 'Teste uma cobrança', desc: 'Faça uma compra teste para verificar se tudo está funcionando corretamente.' }
       ]
     },
